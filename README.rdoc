@@ -1,0 +1,26 @@
+= knife-butler
+
+== DESCRIPTION:
+
+Knife plugin for cookbook testing.
+
+== INSTALLATION:
+This plugin is distributed as a Ruby Gem. To install it, run:
+
+    gem install knife-butler (with specific-install for now; not published)
+
+Depending on your system's configuration, you may need to run this command with root privileges.
+
+== CONFIGURATION:
+
+..
+
+== SUBCOMMANDS:
+
+...
+
+== LICENSE:
+
+Author:: Robbert-Jan Sperna Weiland
+
+Copyright:: Copyright (c) 2018
