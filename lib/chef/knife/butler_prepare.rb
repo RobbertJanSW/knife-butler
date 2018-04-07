@@ -24,6 +24,7 @@ module KnifeButler
       Chef::Log.debug("CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}")
       Chef::Log.debug("CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}")
 
+      server_create = Chef::KnifeCloudstack::CsServerCreate.new
     end
 
     def config_fetch
