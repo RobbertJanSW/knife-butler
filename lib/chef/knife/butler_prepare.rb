@@ -67,6 +67,15 @@ module KnifeButler
       puts "Creating forwarding rule..."
       forwardingrule_details = forwardingrule_create.run
       puts "Done!"
+      
+      # Wait for WinRM to become responsive:
+      puts "Waiting for WinRM......"
+      exec( "until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']} 1>&2>/dev/null ; do sleep 1; done" )
+      sleep(30)
+      
+      # Make sure the machine stays online and is not in a template init reboot or anything
+      exec( "until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']} 1>&2>/dev/null ; do sleep 1; done" )
+      puts "WinRM available!"
     end
 
     def config_fetch
