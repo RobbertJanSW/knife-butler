@@ -14,13 +14,16 @@ module KnifeButler
       # Depend on knife-cloudstack:
       require 'chef/knife/cs_server_create'
       require 'yaml'
+      require "erb"
     end
 
     banner "knife butler prepare"
 
     def run
       # Get config
-      test_config = YAML.load_file('.kitchen.ci.yml')
+      test_config_raw = File.read('.kitchen.ci.yml')
+      test_config_evaluated = ERB.new(test_config_raw).result( binding )
+      test_config = YAML.load(test_config_evaluated)
       puts "CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}"
       puts "CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}"
 
