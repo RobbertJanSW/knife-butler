@@ -23,6 +23,8 @@ module KnifeButler
       test_config = config_fetch
       butler_data = butler_data_fetch
 
+      puts "#{butler_data}"
+
       # Destroy VM
       server_delete = Chef::KnifeCloudstack::CsServerDelete.new
 
