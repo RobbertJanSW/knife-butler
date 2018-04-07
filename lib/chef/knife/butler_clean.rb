@@ -38,7 +38,7 @@ module KnifeButler
       puts "Done!"
 
       # Wait for the VM do be deleted
-      sleep(15)
+      sleep(120)
       
       # Expunge!
       server_delete = Chef::KnifeCloudstack::CsServerDelete.new
