@@ -14,6 +14,7 @@ module KnifeButler
       # Depend on knife-cloudstack:
       require 'chef/knife/cs_server_create'
       Chef::KnifeCloudstack::CsServerCreate.load_deps
+      Chef::KnifeCloudstack::CsForwardruleCreate.load_deps
       require 'yaml'
       require "erb"
     end
@@ -25,6 +26,7 @@ module KnifeButler
       Chef::Log.debug("CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}")
       Chef::Log.debug("CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}")
 
+      # Create VM
       server_create = Chef::KnifeCloudstack::CsServerCreate.new
 
       server_create.name_args = ['testvm848']
@@ -40,6 +42,18 @@ module KnifeButler
       server_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating VM..."
       vm_details = server_create.run
+      puts "Done!"
+
+      # Create forwardrule
+      forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
+      
+      forwardingrule_create.name_args = ['testvm848', '19988:5985:TCP']
+      forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
+      forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
+      forwardingrule_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      puts "Creating forwarding rule..."
+      forwardingrule_create
       puts "Done!"
     end
 
