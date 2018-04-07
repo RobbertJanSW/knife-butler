@@ -13,6 +13,7 @@ module KnifeButler
       Chef::Knife::Bootstrap.load_deps
       # Depend on knife-cloudstack:
       require 'chef/knife/cs_server_create'
+      Chef::KnifeCloudstack::CsServerCreate.load_deps
       require 'yaml'
       require "erb"
     end
@@ -25,6 +26,21 @@ module KnifeButler
       Chef::Log.debug("CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}")
 
       server_create = Chef::KnifeCloudstack::CsServerCreate.new
+
+      server_create.name_args = ['testvm848']
+      server_create.config[:cloudstack_networks] = [test_config['driver']['customize']['network_name']]
+      server_create.config[:cloudstack_template] = test_config['platforms'].first['driver_config']['box']
+      server_create.config[:bootstrap] = false
+      server_create.config[:public_ip] = false
+      server_create.config[:cloudstack_service] = test_config['driver']['customize']['service_offering_name']
+      server_create.config[:ipfwd_rules] = "7887:5985:TCP"
+      server_create.config[:cloudstack_password] = true
+      server_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      server_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
+      server_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      puts "Creating VM..."
+      vm_details = server_create.run
+      puts "Done!"
     end
 
     def config_fetch
