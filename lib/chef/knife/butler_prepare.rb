@@ -21,8 +21,8 @@ module KnifeButler
     def run
       # Get config
       test_config = YAML.load_file('.kitchen.ci.yml')
-      puts "CLOUDSTACK HOST: #{test_config['driver']['customize']['CLOUDSTACK_HOST']}"
-      puts "CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['NETWORK_NAME']}"
+      puts "CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}"
+      puts "CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}"
 
     end
 
