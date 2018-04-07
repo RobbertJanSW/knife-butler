@@ -44,16 +44,19 @@ module KnifeButler
       vm_details = server_create.run
       puts "Done!"
 
+      # Wait for the VM to settle into existance
+      sleep(5)
+
       # Create forwardrule
       forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
-      
+
       forwardingrule_create.name_args = ['testvm848', '19988:5985:TCP']
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
       forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
       forwardingrule_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating forwarding rule..."
-      forwardingrule_create
+      forwardingrule_details = forwardingrule_create.run
       puts "Done!"
     end
 
