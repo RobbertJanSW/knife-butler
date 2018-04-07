@@ -72,7 +72,7 @@ module KnifeButler
       puts "Waiting for WinRM......"
       exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done\"" )
       sleep(30)
-      
+
       # Make sure the machine stays online and is not in a template init reboot or anything
       exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done\"" )
       puts "WinRM available!"
