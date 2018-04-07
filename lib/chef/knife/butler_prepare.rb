@@ -26,10 +26,17 @@ module KnifeButler
       Chef::Log.debug("CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}")
       Chef::Log.debug("CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}")
 
+      # Create unique data for this test environment:
+      o = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten
+      str_random = (0...8).map { o[rand(o.length)] }.join
+      butler_data = {}
+      butler_data['server_name'] = "butler-test-vm-#{str_random}"
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
+
       # Create VM
       server_create = Chef::KnifeCloudstack::CsServerCreate.new
 
-      server_create.name_args = ['testvm848']
+      server_create.name_args = [butler_data['server_name']]
       server_create.config[:cloudstack_networks] = [test_config['driver']['customize']['network_name']]
       server_create.config[:cloudstack_template] = test_config['platforms'].first['driver_config']['box']
       server_create.config[:bootstrap] = false
@@ -50,7 +57,7 @@ module KnifeButler
       # Create forwardrule
       forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
 
-      forwardingrule_create.name_args = ['testvm848', '19988:5985:TCP']
+      forwardingrule_create.name_args = [butler_data['server_name'], '19988:5985:TCP']
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
       forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
