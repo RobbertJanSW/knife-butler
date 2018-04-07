@@ -23,6 +23,7 @@ module KnifeButler
       # Get config
       test_config_raw = File.read('.kitchen.ci.yml')
       test_config_evaluated = ERB.new(test_config_raw).result( binding )
+      puts "EVALUATED CONFIG: #{test_config_evaluated}"
       test_config = YAML.load(test_config_evaluated)
       puts "CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}"
       puts "CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}"
