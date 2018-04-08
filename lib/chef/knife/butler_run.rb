@@ -20,7 +20,7 @@ module KnifeButler
     def run
       test_config = config_fetch
       butler_data = butler_data_fetch
-      
+
       # Bootstrap our VM with the desired runlist
       bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
 
@@ -29,7 +29,10 @@ module KnifeButler
       bootstrap.config[:winrm_password] = [butler_data['password']]
       bootstrap.config[:winrm_transport] = true
       bootstrap.config[:winrm_user] = 'Administrator'
+
+      puts "Starting bootstrap.."
       bootstrap
+      puts "Done!"
     end
 
     def config_fetch
