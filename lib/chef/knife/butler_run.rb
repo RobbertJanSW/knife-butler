@@ -31,7 +31,7 @@ module KnifeButler
       bootstrap.config[:winrm_user] = 'Administrator'
 
       puts "Starting bootstrap.."
-      bootstrap
+      bootstrap.run
       puts "Done!"
     end
 
