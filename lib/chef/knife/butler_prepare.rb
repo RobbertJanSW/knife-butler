@@ -53,7 +53,11 @@ module KnifeButler
       server_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating VM..."
       vm_details = server_create.run
-      puts "Done!"
+      server_details = server_create.server
+      puts "Done!...details:"
+      puts vm_details
+      puts server_details
+      puts "End of detalis"
 
       # Wait for the VM to settle into existance
       sleep(5)
