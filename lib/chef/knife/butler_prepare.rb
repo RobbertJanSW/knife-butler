@@ -70,7 +70,13 @@ module KnifeButler
       
       # Wait for WinRM to become responsive:
       puts "Waiting for WinRM......"
-      exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done; sleep 30; until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done;\"" )
+      begin
+        exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done;\"" )
+        sleep(20)
+        exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done;\"" )
+      recsue
+        nil
+      end
       puts "WinRM available!"
     end
 
