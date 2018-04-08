@@ -55,8 +55,8 @@ module KnifeButler
       vm_details = server_create.run
       server_details = server_create.server
       puts "Done!...details:"
-      puts vm_details
       puts server_details
+      puts "IP OF SERVER: #{server_details['public_ip']}"
       puts "End of detalis"
 
       # Wait for the VM to settle into existance
