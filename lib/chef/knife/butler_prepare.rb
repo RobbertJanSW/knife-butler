@@ -80,7 +80,7 @@ module KnifeButler
       # Wait for WinRM to become responsive:
       puts "Waiting for WinRM......"
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed'])
-      sleep(20)
+      sleep(60)
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed'])
       puts "WinRM available!"
     end
