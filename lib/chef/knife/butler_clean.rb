@@ -34,22 +34,22 @@ module KnifeButler
       server_delete.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       server_delete.config[:yes] = true
       puts "Deleting VM..."
-      vm_delete_details = server_delete.run
+      begin
+        vm_delete_details = server_delete.run
+      rescue
+        nil
+      end
       puts "Done!"
 
       # Wait for the VM do be deleted
-      sleep(120)
-      
-      # Expunge!
-      server_delete = Chef::KnifeCloudstack::CsServerDelete.new
+      sleep(10)
 
-      server_delete.name_args = [butler_data['server_name']]
-      server_delete.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      server_delete.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      server_delete.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
-      server_delete.config[:yes] = true
-      puts "Deleting VM..."
-      vm_delete_details = server_delete.run
+      # Expunge!
+      begin
+        vm_delete_details = server_delete.run
+      rescue
+        nil
+      end
       puts "Done!"
     end
 
