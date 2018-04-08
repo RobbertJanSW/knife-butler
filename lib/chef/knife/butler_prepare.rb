@@ -17,6 +17,8 @@ module KnifeButler
       Chef::KnifeCloudstack::CsForwardruleCreate.load_deps
       require 'yaml'
       require "erb"
+      require 'socket'
+      require 'timeout'
     end
 
     banner "knife butler prepare"
@@ -70,13 +72,9 @@ module KnifeButler
       
       # Wait for WinRM to become responsive:
       puts "Waiting for WinRM......"
-      begin
-        exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done;\"" )
-        sleep(20)
-        exec( "bash -c \"until echo 'Bye' > /dev/tcp/#{test_config['driver']['customize']['pf_ip_address']}/#{butler_data['port_exposed']}; do sleep 1; done;\"" )
-      recsue
-        nil
-      end
+      wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed'])
+      sleep(20)
+      wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed'])
       puts "WinRM available!"
     end
 
@@ -85,6 +83,20 @@ module KnifeButler
       test_config_raw = File.read('.kitchen.ci.yml')
       test_config_evaluated = ERB.new(test_config_raw).result( binding )
       YAML.load(test_config_evaluated)
+    end
+    def wait_for_port_open(ip, port)
+      port_open = false
+      while port_open == false
+        begin
+          Timeout::timeout(1) do
+            s = TCPSocket.new(ip, port)
+            s.close
+            port_open = true
+          end
+        rescue
+          nil
+        end
+      end
     end
   end # class
 end
