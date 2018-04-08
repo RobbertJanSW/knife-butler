@@ -23,8 +23,8 @@ module KnifeButler
       test_config = config_fetch
       butler_data = butler_data_fetch
 
-      puts "#{butler_data}"
-
+      puts butler_data
+      
       # Destroy VM
       server_delete = Chef::KnifeCloudstack::CsServerDelete.new
 
@@ -63,7 +63,6 @@ module KnifeButler
       # Get config
       test_config_raw = File.read('.kitchen.ci.yml')
       test_config_evaluated = ERB.new(test_config_raw).result( binding )
-      puts "EVALUATED CONFIG: #{test_config_evaluated}"
       YAML.load(test_config_evaluated)
     end
   end # class

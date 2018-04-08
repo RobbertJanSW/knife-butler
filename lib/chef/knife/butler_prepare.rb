@@ -78,7 +78,6 @@ module KnifeButler
       # Get config
       test_config_raw = File.read('.kitchen.ci.yml')
       test_config_evaluated = ERB.new(test_config_raw).result( binding )
-      puts "EVALUATED CONFIG: #{test_config_evaluated}"
       YAML.load(test_config_evaluated)
     end
   end # class
