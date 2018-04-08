@@ -24,7 +24,7 @@ module KnifeButler
       # Bootstrap our VM with the desired runlist
       bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
 
-      bootstrap.name_args = [butler_data['server_ip']]
+      bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
       bootstrap.config[:winrm_port] = butler_data['port_exposed']
       bootstrap.config[:winrm_password] = butler_data['server_password']
       bootstrap.config[:winrm_user] = 'Administrator'
