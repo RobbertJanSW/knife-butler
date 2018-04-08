@@ -22,7 +22,7 @@ module KnifeButler
       butler_data = butler_data_fetch
       
       # Bootstrap our VM with the desired runlist
-      bootstrap = new Chef::Knife::BootstrapWindowsWinrm.new
+      bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
 
       bootstrap.name_args = [butler_data['server_ip']]
       bootstrap.config[:winrm_port] = [butler_data['port_exposed']]
