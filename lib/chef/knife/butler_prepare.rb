@@ -32,7 +32,7 @@ module KnifeButler
       o = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten
       str_random = (0...8).map { o[rand(o.length)] }.join
       butler_data = {}
-      butler_data['server_name'] = "butler-test-vm-#{str_random}"
+      butler_data['server_name'] = "butler-#{str_random}"
       str_random = (0...4).map { [rand(10)] }.join
       butler_data['port_exposed'] = str_random
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
