@@ -27,7 +27,6 @@ module KnifeButler
       bootstrap.name_args = [butler_data['server_ip']]
       bootstrap.config[:winrm_port] = [butler_data['port_exposed']]
       bootstrap.config[:winrm_password] = [butler_data['password']]
-      bootstrap.config[:winrm_transport] = true
       bootstrap.config[:winrm_user] = 'Administrator'
 
       puts "Starting bootstrap.."
