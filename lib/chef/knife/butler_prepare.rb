@@ -33,9 +33,9 @@ module KnifeButler
       str_random = (0...8).map { o[rand(o.length)] }.join
       butler_data = {}
       butler_data['server_name'] = "butler-test-vm-#{str_random}"
-      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
       str_random = (0...4).map { [rand(10)] }.join
       butler_data['port_exposed'] = str_random
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Create VM
       server_create = Chef::KnifeCloudstack::CsServerCreate.new
@@ -52,12 +52,15 @@ module KnifeButler
       server_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
       server_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating VM..."
-      vm_details = server_create.run
+      server_create.run
       server_details = server_create.server
       puts "Done!...details:"
       puts server_details
       puts "IP OF SERVER: #{server_details['public_ip']}"
       puts "End of detalis"
+      butler_data['server_ip'] = server_details['public_ip']
+      butler_data['server_password'] = server_details['password']
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for the VM to settle into existance
       sleep(5)
