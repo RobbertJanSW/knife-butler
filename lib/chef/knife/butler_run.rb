@@ -54,7 +54,7 @@ module KnifeButler
       # Push ZIP (create it first) to VM over port 'port_exposed_zipdata'
       # Re-run bootstrap with new command (simply tailing butler run wrapper script logfile)
       # until that file is deleted, and then check exit_status of .butler exit status reporting file
-      
+
       puts "Checking for open zipdata port #{test_config['driver']['customize']['pf_ip_address']} #{butler_data['port_exposed_zipdata']}...."
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
       puts 'Available!!!'
@@ -75,12 +75,15 @@ module KnifeButler
     def wait_for_port_open(ip, port)
       port_open = false
       while !port_open
+        puts "TRYING PORT....."
         thr = Thread.new { system("telnet #{ip} #{port}") }
-        sleep 3
+        sleep(3)
         if thr.alive?
+          puts "PORT IS OPEN!"
           port_open = true
           Thread.kill(thr)
         end
+        thr.join
       end
     end
   end # class
