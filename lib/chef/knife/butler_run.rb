@@ -20,6 +20,11 @@ module KnifeButler
     def run
       test_config = config_fetch
       butler_data = butler_data_fetch
+      
+      # Prepare chef-solo files
+      # 
+      exec ( "mkdir .\butler_bootstrap_data" )
+      exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
 
       # Bootstrap our VM with the desired runlist
       bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
@@ -30,6 +35,7 @@ module KnifeButler
       bootstrap.config[:winrm_user] = 'Administrator'
       bootstrap.config[:chef_node_name] = butler_data['server_name']
       bootstrap.config[:chef_server] = false
+      bootstrap.config[:payload_folder] = '.\butler_bootstrap_data'
 
       puts "Starting bootstrap.."
       bootstrap.run
