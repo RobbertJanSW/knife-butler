@@ -44,6 +44,7 @@ module KnifeButler
       bootstrap.config[:chef_server] = false
       bootstrap.config[:payload_folder] = butler_runner_windows_path
       bootstrap.config[:bootstrap_run_command] = 'C:\chef\extra_files\butler_runner_windows.ps1'
+      bootstrap.config[:chef_server] = false
       # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
 
       puts "Starting bootstrap.."
