@@ -55,7 +55,7 @@ module KnifeButler
       # Re-run bootstrap with new command (simply tailing butler run wrapper script logfile)
       # until that file is deleted, and then check exit_status of .butler exit status reporting file
       
-      puts 'Checking for open zipdata port #{test_config['driver']['customize']['pf_ip_address']} #{butler_data['port_exposed_zipdata']}....'
+      puts "Checking for open zipdata port #{test_config['driver']['customize']['pf_ip_address']} #{butler_data['port_exposed_zipdata']}...."
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
       puts 'Available!!!'
 
