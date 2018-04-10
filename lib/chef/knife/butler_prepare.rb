@@ -95,8 +95,8 @@ module KnifeButler
       puts "Waiting for WinRM......"
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_winrm'])
       puts "WinRM available!"
-      puts "Sleeping one minute..."
-      sleep(60)
+      puts "Sleeping two minutes..."
+      sleep(120)
       puts "Rechecking.."
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_winrm'])
       puts "WinRM available!"
