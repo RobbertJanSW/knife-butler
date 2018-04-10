@@ -74,15 +74,12 @@ module KnifeButler
     end
     def wait_for_port_open(ip, port)
       port_open = false
-      while port_open == false
-        begin
-          Timeout::timeout(1) do
-            s = TCPSocket.new(ip, port)
-            s.close
-            port_open = true
-          end
-        rescue
-          nil
+      while !port_open
+        thr = Thread.new { system("telnet #{ip} #{port}") }
+        sleep 3
+        if thr.alive?
+          port_open = true
+          Thread.kill(thr)
         end
       end
     end
