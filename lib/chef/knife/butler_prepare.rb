@@ -70,7 +70,7 @@ module KnifeButler
       # Create WinRM forwardrule
       forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
 
-      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_winrm']}:5999:TCP"]
+      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_winrm']}:5985:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
       forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
@@ -82,7 +82,7 @@ module KnifeButler
       # Create Payload forwardrule
       forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
 
-      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_zipdata']}:5985:TCP"]
+      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_zipdata']}:5999:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
       forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
@@ -94,7 +94,10 @@ module KnifeButler
       # Wait for WinRM to become responsive:
       puts "Waiting for WinRM......"
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_winrm'])
+      puts "WinRM available!"
+      puts "Sleeping one minute..."
       sleep(60)
+      puts "Rechecking.."
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_winrm'])
       puts "WinRM available!"
     end
