@@ -26,16 +26,21 @@ module KnifeButler
       exec ( "mkdir .\butler_bootstrap_data" )
       exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
 
+      butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
+      butler_runner_windows_path = File.dirname(butler_runner_windows)
+
+
       # Bootstrap our VM with the desired runlist
       bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
 
       bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
-      bootstrap.config[:winrm_port] = butler_data['port_exposed']
+      bootstrap.config[:winrm_port] = butler_data['port_exposed_winrm']
       bootstrap.config[:winrm_password] = butler_data['server_password']
       bootstrap.config[:winrm_user] = 'Administrator'
       bootstrap.config[:chef_node_name] = butler_data['server_name']
       bootstrap.config[:chef_server] = false
-      bootstrap.config[:payload_folder] = '.\butler_bootstrap_data'
+      bootstrap.config[:payload_folder] = butler_runner_windows_path
+      bootstrap.config[:bootstrap_run_command] = 'C:\chef\extra_files\butler_runner_windows.ps1'
 
       puts "Starting bootstrap.."
       bootstrap.run
