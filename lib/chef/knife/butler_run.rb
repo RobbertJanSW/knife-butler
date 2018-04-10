@@ -20,11 +20,12 @@ module KnifeButler
     def run
       test_config = config_fetch
       butler_data = butler_data_fetch
-      
+
       # Prepare chef-solo files
       # 
       # exec ( "mkdir .\butler_bootstrap_data" )
       # exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
+      
 
       puts "Fetching windows butler runner file from gem path..."
       butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
@@ -49,6 +50,14 @@ module KnifeButler
       puts "Starting bootstrap.."
       bootstrap.run
       puts "Done!"
+      
+      # Push ZIP (create it first) to VM over port 'port_exposed_zipdata'
+      # Re-run bootstrap with new command (simply tailing butler run wrapper script logfile)
+      # until that file is deleted, and then check exit_status of .butler exit status reporting file
+      
+      puts 'Checking for open zipdata port....'
+      wait_for_port_open(butler_data['port_exposed_zipdata'])
+      puts 'Available!!!'
     end
 
     def config_fetch
@@ -61,6 +70,20 @@ module KnifeButler
       # Get config
       butler_data_raw = File.read('.butler.yml')
       YAML.load(butler_data_raw)
+    end
+    def wait_for_port_open(ip, port)
+      port_open = false
+      while port_open == false
+        begin
+          Timeout::timeout(1) do
+            s = TCPSocket.new(ip, port)
+            s.close
+            port_open = true
+          end
+        rescue
+          nil
+        end
+      end
     end
   end # class
 end
