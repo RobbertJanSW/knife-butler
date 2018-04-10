@@ -23,14 +23,17 @@ module KnifeButler
       
       # Prepare chef-solo files
       # 
-      exec ( "mkdir .\butler_bootstrap_data" )
-      exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
+      # exec ( "mkdir .\butler_bootstrap_data" )
+      # exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
 
+      puts "Fetching windows butler runner file from gem path..."
       butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
       butler_runner_windows_path = File.dirname(butler_runner_windows)
+      puts "Done. Path: #{butler_runner_windows_path}"
 
 
       # Bootstrap our VM with the desired runlist
+      puts "Configuring bootstrap call"
       bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
 
       bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
