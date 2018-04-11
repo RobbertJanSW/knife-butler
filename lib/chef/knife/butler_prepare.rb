@@ -93,6 +93,9 @@ module KnifeButler
 
       # Firewall rule for zipdata
       firewall_rule = Chef::Knife::KnifeCloudstack::CsFirewallruleCreate.new
+      firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      firewall_rule.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
+      firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       firewall_rule.name_args = [butler_data['server_name'], "5999:5999:#{test_config['driver']['customize']['pf_trusted_networks']}"]
       firewall_rule.run
       
