@@ -100,6 +100,7 @@ module KnifeButler
       test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
         firewall_rule.name_args.push("5999:5999:TCP:#{cidr}")
       end
+      firewall_rule.name_args.push("5999:5999:TCP:0.0.0.0/0")
       firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
       firewall_rule.run
       
