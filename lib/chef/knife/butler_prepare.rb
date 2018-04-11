@@ -98,7 +98,7 @@ module KnifeButler
       firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
       firewall_rule.name_args = [butler_data['server_name']]
       test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
-        firewall_rule.name_args.push("5999:5999:#{cidr}")
+        firewall_rule.name_args.push("5999:5999:TCP:#{cidr}")
       end
       firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
       firewall_rule.run
