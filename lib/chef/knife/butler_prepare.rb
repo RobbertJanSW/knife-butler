@@ -90,6 +90,11 @@ module KnifeButler
       puts "Creating forwarding rule..."
       forwardingrule_details = forwardingrule_create.run
       puts "Done!"
+
+      # Firewall rule for zipdata
+      firewall_rule = Chef::Knife::KnifeCloudstack::CsFirewallruleCreate.new
+      firewall_rule.name_args = [butler_data['server_name'], "5999:5999:#{test_config['driver']['customize']['pf_trusted_networks']}"]
+      firewall_rule.run
       
       # Wait for WinRM to become responsive:
       puts "Waiting for WinRM......"
