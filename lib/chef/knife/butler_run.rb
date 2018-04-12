@@ -76,9 +76,9 @@ module KnifeButler
       port_open = false
       while !port_open
         puts "TRYING PORT....."
-        thr = Thread.new { system("nc #{ip} #{port}") }
-        sleep(3)
-        if thr.alive?
+        thr = Thread.new { TCPSocket.open(ip, port) }
+        sleep(2)
+        if !thr.alive?
           puts "PORT IS OPEN!"
           port_open = true
           thr.exit
