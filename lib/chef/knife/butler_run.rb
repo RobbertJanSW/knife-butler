@@ -76,7 +76,7 @@ module KnifeButler
       port_open = false
       while !port_open
         puts "TRYING PORT....."
-        thr = Thread.new { system("bash -c \"echo '' > /dev/tcp/#{ip}/#{port};\"") }
+        thr = Thread.new { system("nc #{ip} #{port}") }
         sleep(3)
         if thr.alive?
           puts "PORT IS OPEN!"
