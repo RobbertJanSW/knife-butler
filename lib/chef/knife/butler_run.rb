@@ -81,7 +81,7 @@ module KnifeButler
         if thr.alive?
           puts "PORT IS OPEN!"
           port_open = true
-          Thread.kill(thr)
+          thr.exit
         end
         thr.join
       end
