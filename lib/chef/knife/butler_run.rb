@@ -98,7 +98,10 @@ module KnifeButler
       while !port_open
         begin
           puts "TRYING PORT....."
-          thr = Thread.new { TCPSocket.open(ip, port) }
+          thr = Thread.new {
+            s=TCPSocket.open(ip, port)
+            s.close
+          }
           sleep(2)
         rescue
           nil
