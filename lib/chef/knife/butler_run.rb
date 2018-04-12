@@ -61,7 +61,9 @@ module KnifeButler
 
       # Prepare ZIP with chef-solo run:
       puts "Building ZIP with cookbook data"
-      system("berks package -o integration")
+      berks_result = `berks package -o integration`
+      berks_zip = berks_result.split(' to ').last.chomp("\n")
+      puts "ZIPFILE: #{berks_zip}"
       puts "Done!"
     end
 
