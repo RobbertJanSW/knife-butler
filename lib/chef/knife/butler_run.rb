@@ -78,7 +78,7 @@ module KnifeButler
       sock.close
       puts "DONE"
 
-      `tar -xvzf *.tar.gz`
+      `tar -xvzf #{berks_zip}`
       
       puts "Done!"
       puts "Sleeping"
