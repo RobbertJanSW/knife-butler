@@ -72,7 +72,7 @@ module KnifeButler
       puts "PUSHING FILE TO VM"
       sock = TCPSocket.new(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
       file = File.open(berks_zip, "rb")
-      while (buffer = file.read(2048)) do
+      while (zipfile_contents = file.read(2048)) do
         sock.write zipfile_contents
       end
       sock.close
