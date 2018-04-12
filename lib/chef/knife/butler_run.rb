@@ -59,6 +59,10 @@ module KnifeButler
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
       puts 'Available!!!'
 
+      # Prepare ZIP with chef-solo run:
+      puts "Building ZIP with cookbook data"
+      system("berks package -o integration")
+      puts "Done!"
     end
 
     def config_fetch
