@@ -26,7 +26,7 @@ module KnifeButler
       # 
       # exec ( "mkdir .\butler_bootstrap_data" )
       # exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
-      
+
 
       puts "Fetching windows butler runner file from gem path..."
       butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
@@ -66,16 +66,19 @@ module KnifeButler
       berks_zip = berks_result.split(' to ').last.chomp("\n")
       puts "ZIPFILE: #{berks_zip}"
 
-      file = File.open(berks_zip, "rb")
-      zipfile_contents = file.read
 
-      sleep(5)
       # Push file to test VM
+      sleep(5)
       puts "PUSHING FILE TO VM"
       sock = TCPSocket.new(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
-      sock.write zipfile_contents
+      file = File.open(berks_zip, "rb")
+      while (buffer = file.read(size)) do
+        sock.write zipfile_contents
+      end
       sock.close
       puts "DONE"
+
+      `tar xzf *.tar.gz`
       
       puts "Done!"
       puts "Sleeping"
