@@ -65,15 +65,17 @@ module KnifeButler
       berks_result = `berks package -o default,integration`
       berks_zip = berks_result.split(' to ').last.chomp("\n")
       puts "ZIPFILE: #{berks_zip}"
-      `ls -l`
 
       file = File.open(berks_zip, "rb")
       zipfile_contents = file.read
 
+      sleep(5)
       # Push file to test VM
+      puts "PUSHING FILE TO VM"
       sock = TCPSocket.new(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
       sock.write zipfile_contents
       sock.close
+      puts "DONE"
       
       puts "Done!"
       puts "Sleeping"
