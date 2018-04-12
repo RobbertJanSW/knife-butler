@@ -103,6 +103,9 @@ module KnifeButler
           puts "PORT IS OPEN!"
           port_open = true
           thr.exit
+          while thr.status
+            thr.exit
+          end
         end
         thr.join
       end
