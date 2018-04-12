@@ -12,7 +12,8 @@ module KnifeButler
       require 'chef/knife/bootstrap_windows_winrm'
       Chef::Knife::BootstrapWindowsWinrm.load_deps
       require 'yaml'
-      require "erb"
+      require 'erb'
+      require 'socket'
     end
 
     banner "knife butler run"
@@ -61,10 +62,22 @@ module KnifeButler
 
       # Prepare ZIP with chef-solo run:
       puts "Building ZIP with cookbook data"
-      berks_result = `berks package -o integration`
+      berks_result = `berks package -o default,integration`
       berks_zip = berks_result.split(' to ').last.chomp("\n")
       puts "ZIPFILE: #{berks_zip}"
+      `ls -l`
+
+      file = File.open(berks_zip, "rb")
+      zipfile_contents = file.read
+
+      # Push file to test VM
+      sock = TCPSocket.new(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
+      sock.write zipfile_contents
+      sock.close
+      
       puts "Done!"
+      puts "Sleeping"
+      sleep(3600)
     end
 
     def config_fetch
