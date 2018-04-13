@@ -123,16 +123,30 @@ module KnifeButler
     end
     def wait_for_port_open(ip, port)
       port_open = false
-      while port_open == false
+      while !port_open
         begin
-          Timeout::timeout(1) do
-            s = TCPSocket.new(ip, port)
+          puts "TRYING PORT....."
+          thr = Thread.new {
+            s=TCPSocket.open(ip, port)
             s.close
-            port_open = true
-          end
+          }
+          sleep(2)
         rescue
           nil
         end
+        if !thr.alive?
+          puts "PORT IS OPEN!"
+          port_open = true
+          begin
+            thr.exit
+            while thr.status
+              thr.exit
+            end
+          rescue
+            nil
+          end
+        end
+        thr.join
       end
     end
   end # class
