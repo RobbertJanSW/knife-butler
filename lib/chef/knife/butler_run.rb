@@ -4,6 +4,8 @@
 
 require 'chef/knife'
 require 'json'
+require 'rubygems'
+require 'zip'
 
 module KnifeButler
   class ButlerRun < Chef::Knife
@@ -78,7 +80,7 @@ module KnifeButler
       sock.close
       puts "DONE"
 
-      `tar -xvzf #{berks_zip}`
+      `tar -xvzf #{berks_zip} ./cookbooks`
       
       puts "Done!"
       puts "Sleeping"
