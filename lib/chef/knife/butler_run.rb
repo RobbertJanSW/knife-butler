@@ -68,15 +68,15 @@ module KnifeButler
       berks_zip = berks_result.split(' to ').last.chomp("\n")
       puts "ZIPFILE: #{berks_zip}"
 
-      `tar -xvzf #{berks_zip} ./cookbooks`
+      `tar -xvzf #{berks_zip}`
       
       # Build normal zip from berls data
-      folder = "./cookbooks"
+      folder = "."
 
       zipfile_name = "cookbooks.zip"
 
       Zip::File.open(zipfile_name, Zip::File::CREATE) do |zipfile|
-        Dir.foreach("./cookbooks") do |item|
+        Dir.foreach(folder) do |item|
           next if item == '.' or item == '..'
           if File.file?(item)
             zipfile.add(item, item)
