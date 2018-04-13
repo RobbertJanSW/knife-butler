@@ -127,8 +127,13 @@ module KnifeButler
         begin
           puts "TRYING PORT....."
           thr = Thread.new {
-            s=TCPSocket.open(ip, port)
-            s.close
+            begin
+              s=TCPSocket.open(ip, port)
+              s.close
+            rescue
+              sleep(3)
+            end
+            Thread.exit
           }
           sleep(2)
         rescue
