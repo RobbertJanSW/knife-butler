@@ -91,6 +91,18 @@ module KnifeButler
       forwardingrule_details = forwardingrule_create.run
       puts "Done!"
 
+      # Firewall rule for WinRM
+      firewall_rule = Chef::Knife::KnifeCloudstack::CsFirewallruleCreate.new
+      firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      firewall_rule.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
+      firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      firewall_rule.name_args = [butler_data['server_name']]
+      test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
+        firewall_rule.name_args.push("5985:5985:TCP:#{cidr}")
+      end
+      firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
+      firewall_rule.run
+
       # Firewall rule for zipdata
       firewall_rule = Chef::Knife::KnifeCloudstack::CsFirewallruleCreate.new
       firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
@@ -100,7 +112,6 @@ module KnifeButler
       test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
         firewall_rule.name_args.push("5999:5999:TCP:#{cidr}")
       end
-      firewall_rule.name_args.push("5999:5999:TCP:0.0.0.0/0")
       firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
       firewall_rule.run
 
