@@ -68,19 +68,34 @@ module KnifeButler
       berks_zip = berks_result.split(' to ').last.chomp("\n")
       puts "ZIPFILE: #{berks_zip}"
 
+      `tar -xvzf #{berks_zip} ./cookbooks`
+      
+      # Build normal zip from berls data
+      folder = "./cookbooks"
+
+      zipfile_name = "cookbooks.zip"
+
+      Zip::File.open(zipfile_name, Zip::File::CREATE) do |zipfile|
+        Dir.foreach("./cookbooks") do |item|
+          next if item == '.' or item == '..'
+          if File.file?(item)
+            zipfile.add(item, item)
+          end
+        end
+      end
+  
 
       # Push file to test VM
       sleep(5)
       puts "PUSHING FILE TO VM"
       sock = TCPSocket.new(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
-      file = File.open(berks_zip, "rb")
+      file = File.open(zipfile_name, "rb")
       while (zipfile_contents = file.read(2048)) do
         sock.write zipfile_contents
       end
       sock.close
       puts "DONE"
 
-      `tar -xvzf #{berks_zip} ./cookbooks`
       
       puts "Done!"
       puts "Sleeping"
