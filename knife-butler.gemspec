@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef", ">= 12.21.26"
   s.add_dependency "knife-cloudstack", ">= 0"
   s.add_dependency "knife-windows", ">= 0"
+  s.add_dependency "rubyzip", ">= 0"
   s.require_path = 'lib'
   s.files = ["CHANGES.rdoc","README.rdoc"] + Dir.glob("lib/**/*")
 end
