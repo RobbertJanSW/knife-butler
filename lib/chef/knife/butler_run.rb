@@ -96,17 +96,20 @@ module KnifeButler
       sleep(3600)
     end
 
-    def folder_zip_recursive(zipfile, folder, prefix='')
-      if prefix == ''
-        prefix = '.'
-      end
-      Dir.foreach(folder) do |item|
+    def folder_zip_recursive(zipfile, folder, subpath=nil)
+      folder_list = subpath.nil? ? folder : File.join(folder, subpath)
+      Dir.foreach(folder_list) do |item|
         next if item == '.' or item == '..'
-        if File.file?(File.join(folder,item))
-          zipfile.add(File.join(prefix,item), File.join(folder,item))
+        if File.file?(File.join(folder_list,item))
+          internal_path = subpath.nil? ? item : File.join(subpath, item)
+          zipfile.get_output_stream(internal_path) do |f|
+            f.write(File.open(File.join(folder_list,item), 'rb').read)
+          end
+          # zipfile.add(internal_path, File.join(folder,item))
           #puts File.join(prefix,item)
         else
-          folder_zip_recursive(zipfile, File.join(folder,item), File.join(prefix,item))
+          forward_subpath = subpath.nil? ? item : File.join(subpath, item)
+          folder_zip_recursive(zipfile, folder, forward_subpath)
         end
       end
     end
