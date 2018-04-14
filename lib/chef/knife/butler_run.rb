@@ -103,7 +103,7 @@ module KnifeButler
       Dir.foreach(folder) do |item|
         next if item == '.' or item == '..'
         if File.file?(File.join(folder,item))
-          zipfile.add(File.join(prefix,item), item)
+          zipfile.add(File.join(prefix,item), File.join(folder,item))
           #puts File.join(prefix,item)
         else
           folder_zip_recursive(zipfile, File.join(folder,item), File.join(prefix,item))
