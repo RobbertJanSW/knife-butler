@@ -76,14 +76,8 @@ module KnifeButler
       zipfile_name = "cookbooks.zip"
 
       Zip::File.open(zipfile_name, Zip::File::CREATE) do |zipfile|
-        Dir.foreach(folder) do |item|
-          next if item == '.' or item == '..'
-          if File.file?(item)
-            zipfile.add(item, item)
-          end
-        end
+        folder_zip_recursive(zipfile, folder)
       end
-  
 
       # Push file to test VM
       sleep(5)
@@ -100,6 +94,21 @@ module KnifeButler
       puts "Done!"
       puts "Sleeping"
       sleep(3600)
+    end
+
+    def folder_zip_recursive(zipfile, folder, prefix='')
+      if prefix == ''
+        prefix = '.'
+      end
+      Dir.foreach(folder) do |item|
+        next if item == '.' or item == '..'
+        if File.file?(File.join(folder,item))
+          zipfile.add(File.join(prefix,item), item)
+          #puts File.join(prefix,item)
+        else
+          folder_zip_recursive(zipfile, File.join(folder,item), File.join(prefix,item))
+        end
+      end
     end
 
     def config_fetch
