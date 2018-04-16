@@ -44,4 +44,4 @@ $Location.Copyhere($ZipFolder.items())
 # Mkdir cache folder Chef solo
 mkdir C:\Programdata\Butler\cache
 #c:\opscode\chef\bin\chef-client.bat -c C:\Programdata\Butler\content\chef-solo.rb -L C:\programdata\Butler\chef-run.txt
-c:\opscode\chef\bin\chef-client.bat -c C:\chef\extra-files\templates\chef-solo.rb -L C:\programdata\Butler\chef-run.txt
+c:\opscode\chef\bin\chef-client.bat --config C:\chef\extra-files\templates\chef-solo.rb --local-mode -L C:\programdata\Butler\chef-run.txt

@@ -19,7 +19,7 @@ node_name 'tsttst101'
 rest_timeout 300
 #role_path '/var/chef/roles'
 #sandbox_path 'path_to_folder'
-solo true
+solo false
 syntax_check_cache_path
 umask 0022
 verbose_logging nil
