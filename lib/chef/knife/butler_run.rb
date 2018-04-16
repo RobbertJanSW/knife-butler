@@ -71,7 +71,7 @@ module KnifeButler
       `tar -xvzf #{berks_zip}`
       
       # Push chef-solo.rb into the zip folder
-      chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'template', 'chef-solo.rb')).first
+      chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
       `cp #{chef_solo_rb_path} ./cookbooks`
       
       # Build normal zip from berls data

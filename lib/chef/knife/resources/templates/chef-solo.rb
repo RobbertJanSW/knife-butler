@@ -1,17 +1,17 @@
-add_formatter :nyan
-add_formatter :foo
-add_formatter :bar
+#add_formatter :nyan
+#add_formatter :foo
+#add_formatter :bar
 #checksum_path '/var/chef/checksums'
 cookbook_path [
                'C:\Programdata\Butler\content\cookbooks'
                ]
 #data_bag_path '/var/chef/data_bags'
-environment 'production'
+#environment 'production'
 #environment_path '/var/chef/environments'
 #file_backup_path '/var/chef/backup'
-#file_cache_path '/var/chef/cache'
+file_cache_path 'C:\Programdata\Butler\cache'
 json_attribs nil
-lockfile nil
+lockfile 'c:\programdata\Butler\chef-lockfile.txt'
 log_level :info
 log_location STDOUT
 node_name 'tsttst101'

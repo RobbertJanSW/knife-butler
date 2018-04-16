@@ -41,4 +41,7 @@ $ZipFolder = $shell.namespace($ZipFile.fullname)
 $Location = $shell.NameSpace('C:\Programdata\Butler\content')
 $Location.Copyhere($ZipFolder.items())
 
-c:\opscode\chef\bin\chef-client.bat -c C:\Programdata\Butler\content\chef-solo.rb -L C:\programdata\Butler\chef-run.txt
+# Mkdir cache folder Chef solo
+mkdir C:\Programdata\Butler\cache
+#c:\opscode\chef\bin\chef-client.bat -c C:\Programdata\Butler\content\chef-solo.rb -L C:\programdata\Butler\chef-run.txt
+c:\opscode\chef\bin\chef-client.bat -c C:\chef\extra-files\templates\chef-solo.rb -L C:\programdata\Butler\chef-run.txt
