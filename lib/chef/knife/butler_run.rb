@@ -85,7 +85,7 @@ module KnifeButler
       opts = {
         endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['port_exposed_winrm']}/wsman",
         user: 'Administrator',
-        password: butler_data['server_password'])
+        password: butler_data['server_password']
       }
       connection = WinRM::Connection.new(opts)
       file_manager = WinRM::FS::FileManager.new(connection)
