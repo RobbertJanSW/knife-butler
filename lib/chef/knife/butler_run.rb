@@ -5,7 +5,6 @@
 require 'chef/knife'
 require 'json'
 require 'rubygems'
-require 'zip'
 
 module KnifeButler
   class ButlerRun < Chef::Knife
@@ -16,6 +15,7 @@ module KnifeButler
       require 'yaml'
       require 'erb'
       require 'socket'
+      require 'winrm-fs'
     end
 
     banner "knife butler run"
@@ -70,33 +70,29 @@ module KnifeButler
       puts "ZIPFILE: #{berks_zip}"
 
       `tar -xvzf #{berks_zip}`
-      
+
       # Push chef-solo.rb into the zip folder
       chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
       `cp #{chef_solo_rb_path} ./cookbooks`
-      
-      # Build normal zip from berls data
-      folder = "."
 
-      zipfile_name = "cookbooks.zip"
+      # Push client.pem into the zip folder
+      chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
+      `cp #{chef_client_pem} ./cookbooks`
 
-      Zip::File.open(zipfile_name, Zip::File::CREATE) do |zipfile|
-        folder_zip_recursive(zipfile, folder)
-      end
-
-      # Push file to test VM
+      # Push cookbook folder to test VM
       sleep(5)
-      puts "PUSHING FILE TO VM"
-      sock = TCPSocket.new(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_zipdata'])
-      file = File.open(zipfile_name, "rb")
-      while (zipfile_contents = file.read(2048)) do
-        sock.write zipfile_contents
-      end
-      sock.close
+      puts "PUSHING FILES TO VM"
+      opts = {
+        endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['port_exposed_winrm']}/wsman",
+        user: 'Administrator',
+        password: butler_data['server_password'])
+      }
+      connection = WinRM::Connection.new(opts)
+      file_manager = WinRM::FS::FileManager.new(connection)
+      file_manager.upload('cookbooks', 'C:\butler-cookbooks')
       puts "DONE"
 
       
-      puts "Done!"
       puts "Sleeping"
       sleep(3600)
     end
