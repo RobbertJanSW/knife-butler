@@ -1,47 +1,24 @@
-# Knife-Butler runner powershell script for Windows
-
-function zipdata_server() {
-  $socket = new-object System.Net.Sockets.TcpListener('0.0.0.0', 5999);
-  if($socket -eq $null){
-    exit 1;
+function wait_for_file($file) {
+  while ($true) {
+    if (Test-Path $file -ErrorAction SilentlyContinue) { break; }
+    sleep 1
   }
-  $socket.start();
-  $client = $socket.AcceptTcpClient();
-  $stream = $client.GetStream();
-  $buffer = new-object System.Byte[] 2048;
-  mkdir "C:\Programdata\Butler\"
-  $file = 'C:\Programdata\Butler\butler.zip';
-  $fileStream = New-Object System.IO.FileStream($file, [System.IO.FileMode]'Create', [System.IO.FileAccess]'Write');
-  do
-  {
-    $read = $null;
-    while($stream.DataAvailable -or $read -eq $null) {
-        $read = $stream.Read($buffer, 0, 2048);
-        if ($read -gt 0) {
-          $fileStream.Write($buffer, 0, $read);
-        }
-      }
-  } While ($read -gt 0);
-  $fileStream.Close();
-  $socket.Stop();
-  $client.close();
-  $stream.Dispose();
 }
 
-# Fetch Butler zipfile network burst
-zipdata_server
-# Twice because of Gitlab runner portcheck
-zipdata_server
+$repo_name = $args[0]
 
-# OK Now we have the zipfile. Extract it
-mkdir 'C:\Programdata\Butler\content\'
-$shell=new-object -com shell.application
-$ZipFile = Get-Item 'C:\Programdata\Butler\butler.zip'
-$ZipFolder = $shell.namespace($ZipFile.fullname)
-$Location = $shell.NameSpace('C:\Programdata\Butler\content')
-$Location.Copyhere($ZipFolder.items())
+wait_for_file('C:\ProgramData\Butler\test_data.json')
 
-# Mkdir cache folder Chef solo
-mkdir C:\Programdata\Butler\cache
-#c:\opscode\chef\bin\chef-client.bat -c C:\Programdata\Butler\content\chef-solo.rb -L C:\programdata\Butler\chef-run.txt
-c:\opscode\chef\bin\chef-client.bat --config C:\chef\extra-files\templates\chef-solo.rb --local-mode -L C:\programdata\Butler\chef-run.txt
+$test_data = Get-Content -Raw -Path  'C:\ProgramData\Butler\test_data.json' | ConvertFrom-Json
+
+$repo = $test_data.repository
+
+# Copy data bags from repo to databags path
+mkdir -f C:\Programdata\Butler\data_bags
+copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags" "C:\ProgramData\butler\data_bags"
+copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\default\encrypted_data_bag_secret" "C:\Chef"
+New-Item C:\Programdata\butler\validation_key -ItemType file
+copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "C:\Programdata\butler\environments"
+
+
+c:\opscode\chef\bin\chef-client.bat -z -E test -c C:\ProgramData\butler\chef-solo.rb

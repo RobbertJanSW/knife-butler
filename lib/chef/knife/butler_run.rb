@@ -35,26 +35,6 @@ module KnifeButler
       butler_runner_windows_path = File.dirname(butler_runner_windows)
       puts "Done. Path: #{butler_runner_windows_path}"
 
-
-      # Bootstrap our VM with the desired runlist
-      puts "Configuring bootstrap call"
-      bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
-
-      bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
-      bootstrap.config[:winrm_port] = butler_data['port_exposed_winrm']
-      bootstrap.config[:winrm_password] = butler_data['server_password']
-      bootstrap.config[:winrm_user] = 'Administrator'
-      bootstrap.config[:bootstrap_version] = '12.21.4'
-      bootstrap.config[:chef_node_name] = butler_data['server_name']
-      bootstrap.config[:chef_server] = false
-      bootstrap.config[:payload_folder] = butler_runner_windows_path
-      bootstrap.config[:bootstrap_run_command] = 'powershell.exe -file C:\chef\extra_files\butler_runner_windows.ps1'
-      # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
-
-      puts "Starting bootstrap.."
-      bootstrap.run
-      puts "Done!"
-      
       # Push ZIP (create it first) to VM over port 'port_exposed_zipdata'
       # Re-run bootstrap with new command (simply tailing butler run wrapper script logfile)
       # until that file is deleted, and then check exit_status of .butler exit status reporting file
@@ -71,16 +51,27 @@ module KnifeButler
 
       `tar -xvzf #{berks_zip}`
 
-      # Push chef-solo.rb into the zip folder
+      mkdir ./butler
+      mv ./cookbooks ./butler/
+      mkdir .\butler\checksums
+      mkdir .\butler\cache
+      mkdir .\butler\backup
+      mkdir .\butler\cookbooks
+      mkdir .\butler\data_bags
+      mkdir .\butler\environments
+      mkdir .\butler\nodes
+      mkdir .\butler\roles
+
+      # Push chef-solo.rb into the butler folder
       chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
-      `cp #{chef_solo_rb_path} ./cookbooks`
+      `cp #{chef_solo_rb_path} ./butler`
 
       # Push client.pem into the zip folder
       chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
-      `cp #{chef_client_pem} ./cookbooks`
+      `cp #{chef_client_pem} ./butler`
 
       # Push cookbook folder to test VM
-      sleep(5)
+      sleep(1)
       puts "PUSHING FILES TO VM"
       opts = {
         endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['port_exposed_winrm']}/wsman",
@@ -89,10 +80,30 @@ module KnifeButler
       }
       connection = WinRM::Connection.new(opts)
       file_manager = WinRM::FS::FileManager.new(connection)
-      file_manager.upload('cookbooks', 'C:\butler-cookbooks')
-      puts "DONE"
+      file_manager.upload('butler', "C:\\Programdata\\")
 
-      
+      sleep(1)
+
+      # Bootstrap our VM with the desired runlist
+      puts "Configuring bootstrap call"
+      bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
+
+      bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
+      bootstrap.config[:winrm_port] = butler_data['port_exposed_winrm']
+      bootstrap.config[:winrm_password] = butler_data['server_password']
+      bootstrap.config[:winrm_user] = 'Administrator'
+      bootstrap.config[:bootstrap_version] = '12.21.4'
+      bootstrap.config[:chef_node_name] = butler_data['server_name']
+      bootstrap.config[:chef_server] = false
+      bootstrap.config[:payload_folder] = butler_runner_windows_path
+      repo_name=${PWD##*/}
+      bootstrap.config[:bootstrap_run_command] = "powershell.exe -file C:\\chef\\extra_files\\butler_runner_windows.ps1 -args #{repo_name}"
+      # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
+
+      puts "Starting bootstrap.."
+      bootstrap.run
+      puts "Done!"
+
       puts "Sleeping"
       sleep(3600)
     end
