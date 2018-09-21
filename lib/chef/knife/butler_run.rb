@@ -51,16 +51,16 @@ module KnifeButler
 
       `tar -xvzf #{berks_zip}`
 
-      mkdir ./butler
-      mv ./cookbooks ./butler/
-      mkdir .\butler\checksums
-      mkdir .\butler\cache
-      mkdir .\butler\backup
-      mkdir .\butler\cookbooks
-      mkdir .\butler\data_bags
-      mkdir .\butler\environments
-      mkdir .\butler\nodes
-      mkdir .\butler\roles
+      `mkdir ./butler`
+      `mv ./cookbooks ./butler/`
+      `mkdir .\butler\checksums`
+      `mkdir .\butler\cache`
+      `mkdir .\butler\backup`
+      `mkdir .\butler\cookbooks`
+      `mkdir .\butler\data_bags`
+      `mkdir .\butler\environments`
+      `mkdir .\butler\nodes`
+      `mkdir .\butler\roles`
 
       # Push chef-solo.rb into the butler folder
       chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
