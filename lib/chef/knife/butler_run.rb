@@ -49,13 +49,19 @@ module KnifeButler
       `mkdir ./butler`
       `mv ./cookbooks ./butler/`
       `mkdir ./butler/checksums`
+      `echo >> ./butler/checksums/dummy`
       `mkdir ./butler/cache`
+      `echo >> ./butler/cache/dummy`
       `mkdir ./butler/backup`
-      `mkdir ./butler/cookbooks`
+      `echo >> ./butler/backup/dummy`
       `mkdir ./butler/data_bags`
+      `echo >> ./butler/data_bags/dummy`
       `mkdir ./butler/environments`
+      `echo >> ./butler/environments/dummy`
       `mkdir ./butler/nodes`
+      `echo >> ./butler/nodes/dummy`
       `mkdir ./butler/roles`
+      `echo >> ./butler/roles/dummy`
 
       # Push chef-solo.rb into the butler folder
       chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
