@@ -1,15 +1,4 @@
-function wait_for_file($file) {
-  while ($true) {
-    if (Test-Path $file -ErrorAction SilentlyContinue) { break; }
-    sleep 1
-  }
-}
-
 $repo_name = $args[0]
-
-wait_for_file('C:\ProgramData\Butler\test_data.json')
-
-$test_data = Get-Content -Raw -Path  'C:\ProgramData\Butler\test_data.json' | ConvertFrom-Json
 
 $repo = $test_data.repository
 
