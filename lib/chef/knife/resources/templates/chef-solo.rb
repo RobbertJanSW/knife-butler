@@ -10,7 +10,7 @@ role_path 'C:\Programdata\butler\roles'
 client_path
 user_path
 validation_key 'C:\Programdata\butler\validation_key'
-client_key
+client_key 'C:\bogus_key'
 encrypted_data_bag_secret
 treat_deprecation_warnings_as_errors false
 solo 'true'
