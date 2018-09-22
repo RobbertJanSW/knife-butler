@@ -94,10 +94,6 @@ module KnifeButler
       bootstrap.config[:winrm_password] = butler_data['server_password']
       bootstrap.config[:winrm_user] = 'Administrator'
       bootstrap.config[:bootstrap_version] = test_config['provisioner']['require_chef_omnibus']
-      puts "bootstrap version: #{bootstrap.config[:bootstrap_version]}"
-      puts "bootstrap version: #{bootstrap.config[:bootstrap_version]}"
-      puts "bootstrap version: #{bootstrap.config[:bootstrap_version]}"
-      puts "bootstrap version: #{bootstrap.config[:bootstrap_version]}"
       bootstrap.config[:chef_node_name] = butler_data['server_name']
       bootstrap.config[:chef_server] = false
       bootstrap.config[:payload_folder] = butler_runner_windows_path
