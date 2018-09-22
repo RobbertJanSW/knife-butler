@@ -8,6 +8,7 @@ $repo = $test_data.repository
 mkdir -f C:\Programdata\Butler\data_bags
 mkdir -f C:\Users\ADMINI~1\AppData\Local\Temp\kitchen\cache
 copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*.*" "C:\ProgramData\butler\data_bags"
+copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*" "C:\ProgramData\butler\data_bags"
 copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\default\encrypted_data_bag_secret" "C:\Chef"
 New-Item C:\Programdata\butler\validation_key -ItemType file
 copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "C:\Programdata\butler\environments"
