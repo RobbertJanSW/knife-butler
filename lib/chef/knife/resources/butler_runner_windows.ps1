@@ -1,5 +1,6 @@
 $repo_name = $args[0]
 $environment = $args[1]
+$runlist = $args[2]
 
 $repo = $test_data.repository
 
@@ -12,4 +13,4 @@ New-Item C:\Programdata\butler\validation_key -ItemType file
 copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "C:\Programdata\butler\environments"
 
 
-c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb
+c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb -o "$runlist"
