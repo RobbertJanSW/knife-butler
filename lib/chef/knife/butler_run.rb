@@ -98,7 +98,7 @@ module KnifeButler
       bootstrap.config[:chef_server] = false
       bootstrap.config[:payload_folder] = butler_runner_windows_path
       repo_name=File.basename(Dir.pwd)
-      bootstrap.config[:bootstrap_run_command] = "powershell.exe -file C:\\chef\\extra_files\\butler_runner_windows.ps1 -args #{repo_name},#{test_config['suites'][0]['attributes']['chef_environment']}"
+      bootstrap.config[:bootstrap_run_command] = "powershell.exe -file C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{test_config['suites'][0]['attributes']['chef_environment']}"
       # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
 
       puts "Starting bootstrap.."
