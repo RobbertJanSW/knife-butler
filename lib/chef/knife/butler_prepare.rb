@@ -124,7 +124,7 @@ module KnifeButler
 
     def config_fetch
       # Get config
-      test_config_raw = File.read('.kitchen.ci.yml')
+      test_config_raw = File.read('.kitchen.yml')
       test_config_evaluated = ERB.new(test_config_raw).result( binding )
       YAML.load(test_config_evaluated)
     end
