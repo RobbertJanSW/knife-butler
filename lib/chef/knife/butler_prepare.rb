@@ -61,7 +61,7 @@ module KnifeButler
       puts "IP OF SERVER: #{server_details['public_ip']}"
       puts "End of detalis"
       butler_data['server_ip'] = server_details['public_ip']
-      butler_data['server_password'] = server_details['password']
+      butler_data['server_password'] = server_details['password'].nil? ? test_config['driver']['customize']['vm_password'] : server_details['password']
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for the VM to settle into existance
