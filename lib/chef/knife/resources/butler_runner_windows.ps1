@@ -15,3 +15,7 @@ copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" 
 
 
 c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb -o "$runlist" -L C:\chef\client.log
+# Register exit for bootstrap console cmd script
+$LASTEXITCODE | Out-File -FilePath C:\chef\ps_exitcode.txt
+# Remove log to trigger continuation of bootstrap console script
+while (Test-Path 'C:\chef\client.log') { Remove-Item 'C:\chef\client.log' -Force -ErrorAction SilentlyContinue }
