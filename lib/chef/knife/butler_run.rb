@@ -107,9 +107,6 @@ module KnifeButler
       puts "Starting bootstrap.."
       bootstrap.run
       puts "Done!"
-
-      puts "Sleeping"
-      sleep(3600)
     end
 
     def folder_zip_recursive(zipfile, folder, subpath=nil)
