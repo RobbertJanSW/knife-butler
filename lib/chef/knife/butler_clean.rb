@@ -12,7 +12,7 @@ module KnifeButler
       require 'chef/knife/bootstrap'
       # Depend on knife-cloudstack:
       require 'chef/knife/cs_server_delete'
-      Chef::KnifeCloudstack::CsServerDelete.load_deps
+      KnifeCloudstack::CsServerDelete.load_deps
       require 'yaml'
       require "erb"
     end
@@ -26,7 +26,7 @@ module KnifeButler
       puts butler_data
       
       # Destroy VM
-      server_delete = Chef::KnifeCloudstack::CsServerDelete.new
+      server_delete = KnifeCloudstack::CsServerDelete.new
 
       server_delete.name_args = [butler_data['server_name']]
       server_delete.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"

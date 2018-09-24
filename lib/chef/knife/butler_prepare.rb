@@ -13,8 +13,8 @@ module KnifeButler
       Chef::Knife::Bootstrap.load_deps
       # Depend on knife-cloudstack:
       require 'chef/knife/cs_server_create'
-      Chef::KnifeCloudstack::CsServerCreate.load_deps
-      Chef::KnifeCloudstack::CsForwardruleCreate.load_deps
+      KnifeCloudstack::CsServerCreate.load_deps
+      KnifeCloudstack::CsForwardruleCreate.load_deps
       require 'yaml'
       require "erb"
       require 'socket'
@@ -40,7 +40,7 @@ module KnifeButler
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Create VM
-      server_create = Chef::KnifeCloudstack::CsServerCreate.new
+      server_create = KnifeCloudstack::CsServerCreate.new
 
       server_create.name_args = [butler_data['server_name']]
       server_create.config[:cloudstack_networks] = [test_config['driver']['customize']['network_name']]
@@ -68,7 +68,7 @@ module KnifeButler
       sleep(5)
 
       # Create WinRM forwardrule
-      forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
+      forwardingrule_create = KnifeCloudstack::CsForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_winrm']}:5985:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
@@ -80,7 +80,7 @@ module KnifeButler
       puts "Done!"
 
       # Create Payload forwardrule
-      forwardingrule_create = Chef::KnifeCloudstack::CsForwardruleCreate.new
+      forwardingrule_create = KnifeCloudstack::CsForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_zipdata']}:5999:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
