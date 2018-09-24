@@ -61,7 +61,7 @@ module KnifeButler
       puts "IP OF SERVER: #{server_details['public_ip']}"
       puts "End of detalis"
       butler_data['server_ip'] = server_details['public_ip']
-      butler_data['server_password'] = server_details['password']
+      butler_data['server_password'] = server_details['passwordenabled'] ? server_details['password'] : test_config['driver']['customize']['vm_password']
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for the VM to settle into existance
@@ -119,11 +119,12 @@ module KnifeButler
       puts "Waiting for WinRM......"
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['port_exposed_winrm'])
       puts "WinRM available!"
+      sleep(2)
     end
 
     def config_fetch
       # Get config
-      test_config_raw = File.read('.kitchen.ci.yml')
+      test_config_raw = File.read('.kitchen.yml')
       test_config_evaluated = ERB.new(test_config_raw).result( binding )
       YAML.load(test_config_evaluated)
     end
