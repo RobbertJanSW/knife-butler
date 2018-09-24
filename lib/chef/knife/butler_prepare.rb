@@ -92,7 +92,7 @@ module KnifeButler
       puts "Done!"
 
       # Firewall rule for WinRM
-      firewall_rule = Chef::Knife::KnifeCloudstack::CsFirewallruleCreate.new
+      firewall_rule = KnifeCloudstack::CsFirewallruleCreate.new
       firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       firewall_rule.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
       firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
@@ -104,7 +104,7 @@ module KnifeButler
       firewall_rule.run
 
       # Firewall rule for zipdata
-      firewall_rule = Chef::Knife::KnifeCloudstack::CsFirewallruleCreate.new
+      firewall_rule = KnifeCloudstack::CsFirewallruleCreate.new
       firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       firewall_rule.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
       firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
