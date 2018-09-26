@@ -23,4 +23,4 @@ if (($resultcode -eq 0) -And (Test-Path C:\Users\Administrator\AppData\Local\Tem
 # Remove log to trigger continuation of bootstrap console script
 while (Test-Path 'C:\chef\client.log') { Remove-Item 'C:\chef\client.log' -Force -ErrorAction SilentlyContinue }
 # Throw error code back upstream in case of unsuccessful run
-if ($resultcode -ne 0) { trhow $resultcode }
+if ($resultcode -ne 0) { throw $resultcode }
