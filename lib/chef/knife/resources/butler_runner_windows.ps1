@@ -20,7 +20,7 @@ $resultcode = $LASTEXITCODE
 if (($resultcode -eq 0) -And (Test-Path C:\Users\Administrator\AppData\Local\Temp\kitchen\cache\chef-stacktrace.out)) {
   $resultcode = 7382
 }
-# Register exit for bootstrap console cmd script
-$resultcode | Out-File -FilePath C:\chef\ps_exitcode.txt
 # Remove log to trigger continuation of bootstrap console script
 while (Test-Path 'C:\chef\client.log') { Remove-Item 'C:\chef\client.log' -Force -ErrorAction SilentlyContinue }
+# Throw error code back upstream in case of unsuccessful run
+if ($resultcode -ne 0) { trhow $resultcode }
