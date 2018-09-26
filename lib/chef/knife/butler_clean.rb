@@ -10,9 +10,9 @@ module KnifeButler
 
     deps do
       require 'chef/knife/bootstrap'
-      # Depend on knife-cloudstack:
+      # Depend on knife-cosmic:
       require 'chef/knife/cs_server_delete'
-      KnifeCloudstack::CsServerDelete.load_deps
+      Knifecosmic::CsServerDelete.load_deps
       require 'yaml'
       require "erb"
     end
@@ -26,12 +26,12 @@ module KnifeButler
       puts butler_data
       
       # Destroy VM
-      server_delete = KnifeCloudstack::CsServerDelete.new
+      server_delete = Knifecosmic::CsServerDelete.new
 
       server_delete.name_args = [butler_data['server_name']]
-      server_delete.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      server_delete.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      server_delete.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      server_delete.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      server_delete.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
+      server_delete.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       server_delete.config[:yes] = true
       puts "Deleting VM..."
       begin

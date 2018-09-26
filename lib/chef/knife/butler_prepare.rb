@@ -11,10 +11,10 @@ module KnifeButler
     deps do
       require 'chef/knife/bootstrap'
       Chef::Knife::Bootstrap.load_deps
-      # Depend on knife-cloudstack:
+      # Depend on knife-cosmic:
       require 'chef/knife/cs_server_create'
-      KnifeCloudstack::CsServerCreate.load_deps
-      KnifeCloudstack::CsForwardruleCreate.load_deps
+      Knifecosmic::CsServerCreate.load_deps
+      Knifecosmic::CsForwardruleCreate.load_deps
       require 'yaml'
       require "erb"
       require 'socket'
@@ -25,8 +25,8 @@ module KnifeButler
 
     def run
       test_config = config_fetch
-      Chef::Log.debug("CLOUDSTACK HOST: #{test_config['driver']['customize']['host']}")
-      Chef::Log.debug("CLOUDSTACK NETWORK_NAME: #{test_config['driver']['customize']['network_name']}")
+      Chef::Log.debug("cosmic HOST: #{test_config['driver']['customize']['host']}")
+      Chef::Log.debug("cosmic NETWORK_NAME: #{test_config['driver']['customize']['network_name']}")
 
       # Create unique data for this test environment:
       o = [('a'..'z'), ('A'..'Z')].map(&:to_a).flatten
@@ -40,19 +40,19 @@ module KnifeButler
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Create VM
-      server_create = KnifeCloudstack::CsServerCreate.new
+      server_create = Knifecosmic::CsServerCreate.new
 
       server_create.name_args = [butler_data['server_name']]
-      server_create.config[:cloudstack_networks] = [test_config['driver']['customize']['network_name']]
-      server_create.config[:cloudstack_template] = test_config['platforms'].first['driver_config']['box']
+      server_create.config[:cosmic_networks] = [test_config['driver']['customize']['network_name']]
+      server_create.config[:cosmic_template] = test_config['platforms'].first['driver_config']['box']
       server_create.config[:bootstrap] = false
       server_create.config[:public_ip] = false
-      server_create.config[:cloudstack_service] = test_config['driver']['customize']['service_offering_name']
+      server_create.config[:cosmic_service] = test_config['driver']['customize']['service_offering_name']
       #server_create.config[:ipfwd_rules] = "#{butler_data['port_exposed_winrm']}:5985:TCP"
-      server_create.config[:cloudstack_password] = true
-      server_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      server_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      server_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      server_create.config[:cosmic_password] = true
+      server_create.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      server_create.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
+      server_create.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating VM..."
       server_create.run
       server_details = server_create.server
@@ -68,34 +68,34 @@ module KnifeButler
       sleep(5)
 
       # Create WinRM forwardrule
-      forwardingrule_create = KnifeCloudstack::CsForwardruleCreate.new
+      forwardingrule_create = Knifecosmic::CsForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_winrm']}:5985:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
-      forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      forwardingrule_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      forwardingrule_create.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      forwardingrule_create.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
+      forwardingrule_create.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating forwarding rule..."
       forwardingrule_details = forwardingrule_create.run
       puts "Done!"
 
       # Create Payload forwardrule
-      forwardingrule_create = KnifeCloudstack::CsForwardruleCreate.new
+      forwardingrule_create = Knifecosmic::CsForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_zipdata']}:5999:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
-      forwardingrule_create.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      forwardingrule_create.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      forwardingrule_create.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      forwardingrule_create.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      forwardingrule_create.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
+      forwardingrule_create.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       puts "Creating forwarding rule..."
       forwardingrule_details = forwardingrule_create.run
       puts "Done!"
 
       # Firewall rule for WinRM
-      firewall_rule = KnifeCloudstack::CsFirewallruleCreate.new
-      firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      firewall_rule.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      firewall_rule = Knifecosmic::CsFirewallruleCreate.new
+      firewall_rule.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      firewall_rule.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
+      firewall_rule.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       firewall_rule.name_args = [butler_data['server_name']]
       test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
         firewall_rule.name_args.push("5985:5985:TCP:#{cidr}")
@@ -104,10 +104,10 @@ module KnifeButler
       firewall_rule.run
 
       # Firewall rule for zipdata
-      firewall_rule = KnifeCloudstack::CsFirewallruleCreate.new
-      firewall_rule.config[:cloudstack_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      firewall_rule.config[:cloudstack_api_key] = test_config['driver']['customize']['api_key']
-      firewall_rule.config[:cloudstack_secret_key] = test_config['driver']['customize']['secret_key']
+      firewall_rule = Knifecosmic::CsFirewallruleCreate.new
+      firewall_rule.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
+      firewall_rule.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
+      firewall_rule.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       firewall_rule.name_args = [butler_data['server_name']]
       test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
         firewall_rule.name_args.push("5999:5999:TCP:#{cidr}")

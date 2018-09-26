@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ["README.rdoc", "CHANGES.rdoc" ]
 
   s.add_dependency "chef", "< 14"
-  s.add_dependency "knife-cloudstack", ">= 0"
+  s.add_dependency "knife-cosmic", ">= 0"
   s.add_dependency "knife-windows", ">= 0"
   s.add_dependency "winrm-fs", ">= 0"
   s.add_dependency "rb-readline", "= 0.5.5"
