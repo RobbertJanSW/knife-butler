@@ -100,7 +100,7 @@ module KnifeButler
       repo_name=File.basename(Dir.pwd)
 
       runlist = test_config['suites'][0]['run_list'].join(",")      
-      bootstrap.config[:bootstrap_run_command] = "powershell.exe -file C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{test_config['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
+      bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{test_config['suites'][0]['attributes']['chef_environment']} `"#{runlist}`""
       bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
       # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
 
