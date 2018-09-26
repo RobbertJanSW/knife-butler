@@ -11,11 +11,14 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = ["README.rdoc", "CHANGES.rdoc" ]
 
-  s.add_dependency "chef", ">= 12.21.26"
+  s.add_dependency "chef", "< 14"
   s.add_dependency "knife-cloudstack", ">= 0"
   s.add_dependency "knife-windows", ">= 0"
-  s.add_dependency "rubyzip", ">= 0"
   s.add_dependency "winrm-fs", ">= 0"
+  s.add_dependency "rb-readline", "= 0.5.5"
+  s.add_dependency "berkshelf", < 7"
+  s.add_dependency "dep_selector", "> 0"
+  s.add_dependency "knife-solo", "> 0"
   s.require_path = 'lib'
   s.files = ["CHANGES.rdoc","README.rdoc"] + Dir.glob("lib/**/*")
 end
