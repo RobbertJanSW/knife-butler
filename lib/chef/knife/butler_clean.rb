@@ -11,8 +11,8 @@ module KnifeButler
     deps do
       require 'chef/knife/bootstrap'
       # Depend on knife-cosmic:
-      require 'chef/knife/cs_server_delete'
-      Knifecosmic::CsServerDelete.load_deps
+      require 'chef/knife/cosmic_server_delete'
+      Knifecosmic::CosmicServerDelete.load_deps
       require 'yaml'
       require "erb"
     end
@@ -26,7 +26,7 @@ module KnifeButler
       puts butler_data
       
       # Destroy VM
-      server_delete = Knifecosmic::CsServerDelete.new
+      server_delete = Knifecosmic::CosmicServerDelete.new
 
       server_delete.name_args = [butler_data['server_name']]
       server_delete.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"

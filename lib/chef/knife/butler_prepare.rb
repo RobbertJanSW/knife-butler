@@ -12,9 +12,9 @@ module KnifeButler
       require 'chef/knife/bootstrap'
       Chef::Knife::Bootstrap.load_deps
       # Depend on knife-cosmic:
-      require 'chef/knife/cs_server_create'
-      Knifecosmic::CsServerCreate.load_deps
-      Knifecosmic::CsForwardruleCreate.load_deps
+      require 'chef/knife/cosmic_server_create'
+      Knifecosmic::CosmicServerCreate.load_deps
+      Knifecosmic::CosmicForwardruleCreate.load_deps
       require 'yaml'
       require "erb"
       require 'socket'
@@ -40,7 +40,7 @@ module KnifeButler
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Create VM
-      server_create = Knifecosmic::CsServerCreate.new
+      server_create = Knifecosmic::CosmicServerCreate.new
 
       server_create.name_args = [butler_data['server_name']]
       server_create.config[:cosmic_networks] = [test_config['driver']['customize']['network_name']]
@@ -68,7 +68,7 @@ module KnifeButler
       sleep(5)
 
       # Create WinRM forwardrule
-      forwardingrule_create = Knifecosmic::CsForwardruleCreate.new
+      forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_winrm']}:5985:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
@@ -80,7 +80,7 @@ module KnifeButler
       puts "Done!"
 
       # Create Payload forwardrule
-      forwardingrule_create = Knifecosmic::CsForwardruleCreate.new
+      forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_zipdata']}:5999:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
@@ -92,7 +92,7 @@ module KnifeButler
       puts "Done!"
 
       # Firewall rule for WinRM
-      firewall_rule = Knifecosmic::CsFirewallruleCreate.new
+      firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
       firewall_rule.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       firewall_rule.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
       firewall_rule.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
@@ -104,7 +104,7 @@ module KnifeButler
       firewall_rule.run
 
       # Firewall rule for zipdata
-      firewall_rule = Knifecosmic::CsFirewallruleCreate.new
+      firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
       firewall_rule.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       firewall_rule.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
       firewall_rule.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
