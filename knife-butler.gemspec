@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef", "< 14"
   s.add_dependency "knife-cosmic", ">= 0"
-  s.add_dependency "knife-windows", ">= 0"
+  s.add_dependency "knife-winops", "= 2.0.0"
   s.add_dependency "winrm-fs", ">= 0"
   s.add_dependency "rb-readline", "= 0.5.5"
   s.add_dependency "berkshelf", "< 7"
