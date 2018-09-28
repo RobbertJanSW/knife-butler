@@ -75,7 +75,7 @@ module KnifeButler
       sleep(1)
       puts "PUSHING FILES TO VM"
       opts = {
-        endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['port_exposed_winrm']}/wsman",
+        endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['communicator_exposed_port']}/wsman",
         user: 'Administrator',
         password: butler_data['server_password']
       }
@@ -90,7 +90,7 @@ module KnifeButler
       bootstrap = Chef::Knife::BootstrapWindowsWinRM.new
 
       bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
-      bootstrap.config[:winrm_port] = butler_data['port_exposed_winrm']
+      bootstrap.config[:winrm_port] = butler_data['communicator_exposed_port']
       bootstrap.config[:winrm_password] = butler_data['server_password']
       bootstrap.config[:winrm_user] = 'Administrator'
       bootstrap.config[:bootstrap_version] = test_config['provisioner']['require_chef_omnibus']
