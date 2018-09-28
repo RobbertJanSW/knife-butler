@@ -36,7 +36,6 @@ module KnifeButler
       str_random = (0...4).map { [rand(10)] }.join
       butler_data['communicator_exposed_port'] = str_random
       str_random = (0...4).map { [rand(10)] }.join
-      butler_data['port_exposed_zipdata'] = str_random
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Create VM
@@ -67,7 +66,7 @@ module KnifeButler
       # Wait for the VM to settle into existance
       sleep(5)
 
-      # Create WinRM forwardrule
+      # Create communicator forwardrule
       forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
 
       forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['communicator_exposed_port']}:5985:TCP"]
@@ -79,19 +78,7 @@ module KnifeButler
       forwardingrule_details = forwardingrule_create.run
       puts "Done!"
 
-      # Create Payload forwardrule
-      forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
-
-      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['port_exposed_zipdata']}:5999:TCP"]
-      forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
-      forwardingrule_create.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      forwardingrule_create.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
-      forwardingrule_create.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
-      puts "Creating forwarding rule..."
-      forwardingrule_details = forwardingrule_create.run
-      puts "Done!"
-
-      # Firewall rule for WinRM
+      # Firewall rule for communicator
       firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
       firewall_rule.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       firewall_rule.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
@@ -103,22 +90,10 @@ module KnifeButler
       firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
       firewall_rule.run
 
-      # Firewall rule for zipdata
-      firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
-      firewall_rule.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      firewall_rule.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
-      firewall_rule.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
-      firewall_rule.name_args = [butler_data['server_name']]
-      test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
-        firewall_rule.name_args.push("5999:5999:TCP:#{cidr}")
-      end
-      firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
-      firewall_rule.run
-
-      # Wait for WinRM to become responsive:
-      puts "Waiting for WinRM......"
+      # Wait for communicator to become responsive:
+      puts "Waiting for communicator port......"
       wait_for_port_open(test_config['driver']['customize']['pf_ip_address'], butler_data['communicator_exposed_port'])
-      puts "WinRM available!"
+      puts "Communicator available!"
       sleep(2)
     end
 
