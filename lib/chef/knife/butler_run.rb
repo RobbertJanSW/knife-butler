@@ -10,8 +10,8 @@ module KnifeButler
   class ButlerRun < Chef::Knife
 
     deps do
-      require 'chef/knife/bootstrap_windows_winrm'
-      Chef::Knife::BootstrapWindowsWinrm.load_deps
+      require 'chef/knife/winops_bootstrap_windows_winrm'
+      Chef::Knife::BootstrapWindowsWinRM.load_deps
       require 'yaml'
       require 'erb'
       require 'socket'
@@ -87,7 +87,7 @@ module KnifeButler
 
       # Bootstrap our VM with the desired runlist
       puts "Configuring bootstrap call"
-      bootstrap = Chef::Knife::BootstrapWindowsWinrm.new
+      bootstrap = Chef::Knife::BootstrapWindowsWinRM.new
 
       bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
       bootstrap.config[:winrm_port] = butler_data['port_exposed_winrm']
