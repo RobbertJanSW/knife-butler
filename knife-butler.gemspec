@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{knife-butler}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
   s.date = %q{2018-04-07}
   s.authors = ['Robbert-Jan Sperna Weiland']
   s.email = ['rspernaweiland@schubergphilis.com']
