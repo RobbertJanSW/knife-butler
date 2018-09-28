@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{knife-butler}
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.date = %q{2018-04-07}
   s.authors = ['Robbert-Jan Sperna Weiland']
   s.email = ['rspernaweiland@schubergphilis.com']
@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "chef", "< 14"
   s.add_dependency "knife-cosmic", ">= 0"
-  s.add_dependency "knife-winops", "= 2.0.0"
+  s.add_dependency "knife-winops", "= 2.1.0"
   s.add_dependency "winrm-fs", ">= 0"
   s.add_dependency "rb-readline", "= 0.5.5"
   s.add_dependency "berkshelf", "< 7"
