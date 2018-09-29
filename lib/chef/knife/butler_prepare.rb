@@ -71,8 +71,7 @@ module KnifeButler
       if test_config['platforms'].first['driver_config']['communicator']
         communicator_type = test_config['platforms'].first['driver_config']['communicator']
       else
-        os_type = get_server_ostype(server_details, test_config)
-        communicator_type = default_communicator_for_ostype(os_type)
+        communicator_type = 'ssh'
       end
       communicator_port = default_communicator_port(communicator_type)
 
