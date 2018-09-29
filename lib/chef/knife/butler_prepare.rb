@@ -68,12 +68,7 @@ module KnifeButler
       sleep(5)
 
       # Create communicator forwardrule
-      if test_config['platforms'].first['driver_config']['communicator']
-        communicator_type = test_config['platforms'].first['driver_config']['communicator']
-      else
-        communicator_type = 'ssh'
-      end
-      communicator_port = default_communicator_port(communicator_type)
+      communicator_port = default_communicator_port(communicator_type(test_config))
 
       forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
 
