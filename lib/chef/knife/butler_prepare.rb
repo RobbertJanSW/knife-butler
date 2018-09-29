@@ -7,6 +7,7 @@ require 'json'
 
 module KnifeButler
   class ButlerPrepare < Chef::Knife
+    include ButlerCommon
 
     deps do
       require 'chef/knife/bootstrap'
@@ -47,7 +48,6 @@ module KnifeButler
       server_create.config[:bootstrap] = false
       server_create.config[:public_ip] = false
       server_create.config[:cosmic_service] = test_config['driver']['customize']['service_offering_name']
-      #server_create.config[:ipfwd_rules] = "#{butler_data['communicator_exposed_port']}:5985:TCP"
       server_create.config[:cosmic_password] = true
       server_create.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       server_create.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
@@ -67,9 +67,17 @@ module KnifeButler
       sleep(5)
 
       # Create communicator forwardrule
+      if test_config['platforms'].first['driver_config']['communicator']
+        communicator_type = test_config['platforms'].first['driver_config']['communicator']
+      else
+        os_type = get_server_ostype(server_details, test_config)
+        communicator_type = default_communicator_for_ostype(os_type)
+      end
+      communicator_port = default_communicator_port(communicator_type)
+
       forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
 
-      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['communicator_exposed_port']}:5985:TCP"]
+      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['communicator_exposed_port']}:#{communicator_port}:TCP"]
       forwardingrule_create.config[:vrip] = test_config['driver']['customize']['pf_ip_address']
       forwardingrule_create.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
       forwardingrule_create.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
