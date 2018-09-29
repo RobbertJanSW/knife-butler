@@ -93,7 +93,7 @@ module KnifeButler
       firewall_rule.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
       firewall_rule.name_args = [butler_data['server_name']]
       test_config['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
-        firewall_rule.name_args.push("5985:5985:TCP:#{cidr}")
+        firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
       end
       firewall_rule.config[:public_ip] = test_config['driver']['customize']['pf_ip_address']
       firewall_rule.run
