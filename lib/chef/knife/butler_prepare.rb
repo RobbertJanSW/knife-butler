@@ -3,6 +3,7 @@
 #
 
 require 'chef/knife'
+require 'chef/knife/butler_common'
 require 'json'
 
 module KnifeButler
