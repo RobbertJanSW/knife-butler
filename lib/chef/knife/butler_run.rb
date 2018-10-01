@@ -9,6 +9,7 @@ require 'rubygems'
 
 module KnifeButler
   class ButlerRun < Chef::Knife
+    include ButlerCommon
 
     deps do
       require 'yaml'
