@@ -32,7 +32,7 @@ module ButlerCommon
       connection = WinRM::Connection.new(opts)
       file_manager = WinRM::FS::FileManager.new(connection)
       file_manager.upload('butler', "C:\\Programdata\\")
-    else
+    elsif communicator_type == 'ssh'
       require 'net/scp'
 
       Net::SCP.upload!(butler_data['test_config']['driver']['customize']['pf_ip_address'], 'Administrator',
