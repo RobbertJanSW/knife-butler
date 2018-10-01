@@ -10,8 +10,6 @@ module KnifeButler
   class ButlerRun < Chef::Knife
 
     deps do
-      require 'chef/knife/winops_bootstrap_windows_winrm'
-      Chef::Knife::BootstrapWindowsWinRM.load_deps
       require 'yaml'
       require 'erb'
       require 'socket'
@@ -21,7 +19,7 @@ module KnifeButler
     banner "knife butler run"
 
     def run
-      test_config = config_fetch
+      # test_config = config_fetch
       butler_data = butler_data_fetch
 
       # Prepare chef-solo files
@@ -74,14 +72,9 @@ module KnifeButler
       # Push cookbook folder to test VM
       sleep(1)
       puts "PUSHING FILES TO VM"
-      opts = {
-        endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['communicator_exposed_port']}/wsman",
-        user: 'Administrator',
-        password: butler_data['server_password']
-      }
-      connection = WinRM::Connection.new(opts)
-      file_manager = WinRM::FS::FileManager.new(connection)
-      file_manager.upload('butler', "C:\\Programdata\\")
+
+      files_send('butler', "C:\\Programdata\\", butler_data)
+
 
       sleep(1)
 
@@ -89,18 +82,18 @@ module KnifeButler
       puts "Configuring bootstrap call"
       bootstrap = Chef::Knife::BootstrapWindowsWinRM.new
 
-      bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
+      bootstrap.name_args = [butler_data['test_config']['driver']['customize']['pf_ip_address']]
       bootstrap.config[:winrm_port] = butler_data['communicator_exposed_port']
       bootstrap.config[:winrm_password] = butler_data['server_password']
       bootstrap.config[:winrm_user] = 'Administrator'
-      bootstrap.config[:bootstrap_version] = test_config['provisioner']['require_chef_omnibus']
+      bootstrap.config[:bootstrap_version] = butler_data['test_config']['provisioner']['require_chef_omnibus']
       bootstrap.config[:chef_node_name] = butler_data['server_name']
       bootstrap.config[:chef_server] = false
       bootstrap.config[:payload_folder] = butler_runner_windows_path
       repo_name=File.basename(Dir.pwd)
 
-      runlist = test_config['suites'][0]['run_list'].join(",")      
-      bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{test_config['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
+      runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
+      bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
       bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
       # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
 
