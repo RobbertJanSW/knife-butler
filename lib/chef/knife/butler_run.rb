@@ -2,6 +2,7 @@
 # Author:: Robbert-Jan Sperna Weiland (<rspernaweiland@schubergphilis.com>)
 #
 
+require 'chef/knife/butler_common'
 require 'chef/knife'
 require 'json'
 require 'rubygems'
