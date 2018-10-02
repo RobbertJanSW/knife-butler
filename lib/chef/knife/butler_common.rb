@@ -11,16 +11,16 @@ module ButlerCommon
     communicator_type
   end
 
-  def default_communicator_port(communicator_type)
-    if communicator_type == 'winrm'
+  def default_communicator_port(communicator_type_arg)
+    if communicator_type_arg == 'winrm'
       '5985'
-    elsif communicator_type == 'ssh'
+    elsif communicator_type_arg == 'ssh'
       '22'
     end
   end
 
   def files_send(path_src, path_dest, butler_data)
-    if communicator_type == 'winrm'
+    if communicator_type(butler_data['test_config']) == 'winrm'
       require 'chef/knife/winops_bootstrap_windows_winrm'
       Chef::Knife::BootstrapWindowsWinRM.load_deps
 
@@ -32,7 +32,7 @@ module ButlerCommon
       connection = WinRM::Connection.new(opts)
       file_manager = WinRM::FS::FileManager.new(connection)
       file_manager.upload('butler', path_dest)
-    elsif communicator_type == 'ssh'
+    elsif communicator_type(butler_data['test_config']) == 'ssh'
       require 'net/scp'
 
       Net::SCP.upload!(butler_data['test_config']['driver']['customize']['pf_ip_address'], 'Administrator',
