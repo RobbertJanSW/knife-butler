@@ -16,6 +16,15 @@ module ButlerCommon
     end
   end
 
+  def platform_family(butler_data)
+    # Very dirty quicky
+    if communicator_type(butler_data['test_config']) == 'winrm'
+      'windows'
+    else
+      'linux'
+    end
+  end
+
   def command_run(command, butler_data)
     if communicator_type(butler_data['test_config']) == 'winrm'
       require 'winrm'
