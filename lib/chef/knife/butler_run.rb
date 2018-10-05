@@ -163,7 +163,7 @@ module KnifeButler
       elsif communicator_type(butler_data['test_config']) == 'ssh'
         require 'net/scp'
 
-        puts "USING PASSWORD: #{butler_data['server_password']}"
+        puts "USING PASSWORD: #{butler_data['server_password']} and PORT: #{butler_data['communicator_exposed_port']}"
 
         Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'],
           :username => 'root',
