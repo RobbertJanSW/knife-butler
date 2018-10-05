@@ -75,7 +75,12 @@ module KnifeButler
       sleep(1)
       puts "PUSHING FILES TO VM"
 
-      files_send('butler', "C:\\Programdata\\", butler_data)
+      if platform_family(butler_data) == 'windows'
+        dest_path = "C:\\Programdata\\"
+      else
+        dest_path = "/tmp/"
+      end
+      files_send('butler', dest_path, butler_data)
 
       sleep(1)
 
