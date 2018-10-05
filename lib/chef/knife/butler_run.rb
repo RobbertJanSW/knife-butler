@@ -166,7 +166,7 @@ module KnifeButler
         puts "USING PASSWORD: #{butler_data['server_password']} and PORT: #{butler_data['communicator_exposed_port']}"
 
         Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'],
-          :username => 'root',
+          :username => 'bootstrap',
           :password => "#{butler_data['server_password']}",
           :port => butler_data['communicator_exposed_port']
         ) do |ssh|
