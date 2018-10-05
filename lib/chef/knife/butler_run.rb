@@ -164,9 +164,9 @@ module KnifeButler
         require 'net/scp'
 
         puts "USING PASSWORD: #{butler_data['server_password']}"
-        
+
         Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'],
-          'root',
+          :username => 'root',
           :password => "#{butler_data['server_password']}",
           :port => butler_data['communicator_exposed_port']
         ) do |ssh|
