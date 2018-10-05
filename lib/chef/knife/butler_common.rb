@@ -15,4 +15,31 @@ module ButlerCommon
       '22'
     end
   end
+
+  def command_run(command, butler_data)
+    if communicator_type(butler_data['test_config']) == 'winrm'
+      require 'winrm'
+
+      winrm = Chef::Knife::Winrm.new
+      puts "Running shell command #{command}"
+      winrm.name_args = [ butler_data['test_config']['driver']['customize']['pf_ip_address'], command ]
+      if butler_data['test_config']['driver']['customize']['vm_user'].nil?
+        winrm.config[:winrm_user] = 'Administrator'
+      else
+        winrm.config[:winrm_user] = butler_data['test_config']['driver']['customize']['vm_user']
+      end
+      winrm.config[:winrm_password] = butler_data['server_password']
+      winrm.config[:winrm_port] = butler_data['communicator_exposed_port']
+      winrm.config[:suppress_auth_failure] = true
+      winrm.config[:manual] = true
+      winrm.run
+    elsif communicator_type(butler_data['test_config']) == 'ssh'
+      require 'net/ssh'
+
+      Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'], 'root', :password => butler_data['server_password']) do
+        output = ssh.exec!(command)
+        puts output
+      end
+    end
+  end
 end

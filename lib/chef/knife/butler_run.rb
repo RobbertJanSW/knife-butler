@@ -157,11 +157,11 @@ module KnifeButler
         file_manager.upload('butler', path_dest)
       elsif communicator_type(butler_data['test_config']) == 'ssh'
         require 'net/scp'
-  
-        Net::SCP.upload!(butler_data['test_config']['driver']['customize']['pf_ip_address'], 'Administrator',
+
+        Net::SCP.upload!(butler_data['test_config']['driver']['customize']['pf_ip_address'], 'root',
           path_src, path_dest,
           :password => butler_data['server_password'])
-  
+
       end
     end
 
