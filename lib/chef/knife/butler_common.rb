@@ -45,9 +45,17 @@ module ButlerCommon
     elsif communicator_type(butler_data['test_config']) == 'ssh'
       require 'net/ssh'
 
-      Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'], 'root', :password => butler_data['server_password']) do
-        output = ssh.exec!(command)
-        puts output
+      Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'],
+        'bootstrap',
+        { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'] }
+      ) do |ssh|
+        ssh.exec!(command) do |ch, stream, data|
+          if stream == :stderr
+            puts "ERROR: #{data}"
+          else
+            puts data
+          end
+        end
       end
     end
   end

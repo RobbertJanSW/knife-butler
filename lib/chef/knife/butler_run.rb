@@ -202,15 +202,36 @@ module KnifeButler
         bootstrap.run
       elsif communicator_type(butler_data['test_config']) == 'ssh'
         # On Linux, we use bootstrap only to install the desired Chef version.
-        puts "Configuring bootstrap call"
-        bootstrap = Chef::Knife::Bootstrap.new
+        uri = URI.parse("https://omnitruck-direct.chef.io")
+        
+        request = Net::HTTP.new(uri.host, uri.port)
+        request.use_ssl = true
+        request.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        response = request.get("/chef/install.sh")
 
-        bootstrap.name_args = [butler_data['test_config']['driver']['customize']['pf_ip_address']]
-        bootstrap.config[:ssh_password] = butler_data['server_password']
-        bootstrap.config[:bootstrap_version] = butler_data['test_config']['provisioner']['require_chef_omnibus']
-        bootstrap.config[:chef_node_name] = butler_data['server_name']
-        puts "Starting bootstrap.."
-        bootstrap.run
+        open('/tmp/chef_omnibus_install.sh', 'wb') do |file|
+          file << response.body
+        end
+
+        # send remote
+        files_send('/tmp/chef_omnibus_install.sh', '/tmp/chef_omnibus_install.sh', butler_data)
+        # remote commmand: chmod to runnable
+        command_run('chmod 755 /tmp/chef_omnibus_install.sh', butler_data)
+        
+        # remote command: "sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>"
+        command_run('sh /tmp/chef_omnibus_install.sh -P chef 12.21.4', butler_data)
+
+        puts "Done."
+
+
+#        bootstrap = Chef::Knife::Bootstrap.new
+#
+#        bootstrap.name_args = [butler_data['test_config']['driver']['customize']['pf_ip_address']]
+#        bootstrap.config[:ssh_password] = butler_data['server_password']
+#        bootstrap.config[:bootstrap_version] = butler_data['test_config']['provisioner']['require_chef_omnibus']
+#        bootstrap.config[:chef_node_name] = butler_data['server_name']
+#        puts "Starting bootstrap.."
+#        bootstrap.run
         puts "Done"
 
         # Then, SSH into the box to kick off the Chef-zero run we want:
