@@ -173,7 +173,7 @@ module KnifeButler
           port => butler_data['communicator_exposed_port'],
           verbose => :debug }
         ) do |ssh|
-          ssh.scp.upload! path_src, path_dest
+          ssh.scp.upload!(path_src, path_dest)
         end
 
       end
