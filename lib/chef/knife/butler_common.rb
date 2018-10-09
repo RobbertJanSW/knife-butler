@@ -50,7 +50,7 @@ module ButlerCommon
         { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'] }
       ) do |ssh|
         ssh.open_channel do |channel|
-          channel.exec!(command) do |ch, success|
+          channel.exec(command) do |ch, success|
 
             unless success
               raise "FAILED: could not execute command"
