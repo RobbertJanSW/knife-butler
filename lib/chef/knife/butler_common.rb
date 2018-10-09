@@ -56,7 +56,7 @@ module ButlerCommon
             puts data
           end
         end
-        stream == :stderr
+        if stream == :stderr
           raise "ERROR: #{data}"
         end
       end
