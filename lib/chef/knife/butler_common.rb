@@ -50,14 +50,17 @@ module ButlerCommon
         { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'] }
       ) do |ssh|
         ssh.exec!(command) do |ch, stream, data|
+          lastresult = nil
           if stream == :stderr
             puts "ERROR: #{data}"
+            lastresult = data
           else
             puts data
+            lastresult = nil
           end
         end
-        if stream == :stderr
-          raise "ERROR: #{data}"
+        if lastresult
+          raise "ERROR: #{lastresult}"
         end
       end
     end
