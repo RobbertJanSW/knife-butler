@@ -1,5 +1,6 @@
 repo=$1
 
+mkdir /tmp/butler
 mkdir /tmp/butler/data_bags
 mkdir /tmp/butler/kitchen/cache
 cp -r "/tmp/butler/cookbooks/$repo/test/fixtures/data_bags/*" "/tmp/butler/data_bags/"
