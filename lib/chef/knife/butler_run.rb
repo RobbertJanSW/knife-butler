@@ -64,7 +64,11 @@ module KnifeButler
       `echo >> ./butler/roles/dummy`
 
       # Push chef-solo.rb into the butler folder
-      chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
+      if platform_family(butler_data) == 'windows'
+        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
+      else
+        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo-linux.rb')).first
+      end
       `cp #{chef_solo_rb_path} ./butler`
 
       # Push client.pem into the zip folder

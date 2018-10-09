@@ -51,7 +51,7 @@ module ButlerCommon
       ) do |ssh|
         ssh.exec!(command) do |ch, stream, data|
           if stream == :stderr
-            puts "ERROR: #{data}"
+            raise "ERROR: #{data}"
           else
             puts data
           end
