@@ -230,7 +230,7 @@ module KnifeButler
         butler_stage_linux_path = File.dirname(butler_stage_linux)
         files_send(butler_stage_linux_path, '/tmp/butler_stage.sh', butler_data)
         repo_name=File.basename(Dir.pwd)
-        command_run("sudo chmof 755 /tmp/butler_stage.sh", butler_data)
+        command_run("sudo chmod 755 /tmp/butler_stage.sh", butler_data)
         command_run("sudo /tmp/butler_stage.sh #{repo_name}", butler_data)
 
         # Run Chef in zero mode
