@@ -225,10 +225,17 @@ module KnifeButler
         # remote command: "sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>"
         command_run('sudo sh /tmp/chef_omnibus_install.sh -P chef -v "12.21.4"', butler_data)
 
-        # Run Chef in zero mode
+        # Stage Chef environment
+        butler_stage_linux = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_stage_linux.sh')).first
+        butler_stage_linux_path = File.dirname(butler_stage_linux)
+        files_send(butler_stage_linux_path, '/tmp/butler_stage.sh', butler_data)
         repo_name=File.basename(Dir.pwd)
+        command_run("sudo chmof 755 /tmp/butler_stage.sh")
+        command_run("sudo /tmp/butler_stage.sh #{repo_name}")
+
+        # Run Chef in zero mode
         runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
-        command_run("chef-client -z -E #{repo_name} -c /tmp/butler/chef-solo.rb -o #{runlist}", butler_data)
+        command_run("chef-client -z -E #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} -c /tmp/butler/chef-solo.rb -o #{runlist}", butler_data)
         puts "Done."
 
 
