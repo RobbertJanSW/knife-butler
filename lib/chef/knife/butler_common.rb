@@ -49,6 +49,10 @@ module ButlerCommon
         'bootstrap',
         { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'] }
       ) do |ssh|
+        stdout_data = ""
+        stderr_data = ""
+        exit_code = nil
+        exit_signal = nil
         ssh.open_channel do |channel|
           channel.exec(command) do |ch, success|
 
