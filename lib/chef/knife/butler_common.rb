@@ -49,19 +49,29 @@ module ButlerCommon
         'bootstrap',
         { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'] }
       ) do |ssh|
-        ssh.exec!(command) do |ch, stream, data|
-          lastresult = nil
-          if stream == :stderr
-            puts "ERROR: #{data}"
-            lastresult = data
-          else
+        ssh.open_channel do |channel|
+          channel.exec!(command) do |ch, success|
+
+          unless success
+            raise "FAILED: could not execute command"
+          end
+          channel.on_data do |ch,data|
             puts data
-            lastresult = nil
+          end
+
+          channel.on_extended_data do |ch,type,data|
+            stderr_data+=data
+          end
+
+          channel.on_request("exit-status") do |ch,data|
+            exit_code = data.read_long
+          end
+
+          channel.on_request("exit-signal") do |ch, data|
+            exit_signal = data.read_long
           end
         end
-        if lastresult
-          raise "ERROR: #{lastresult}"
-        end
+        ssh.loop
       end
     end
   end
