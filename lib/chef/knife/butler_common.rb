@@ -70,7 +70,7 @@ module ButlerCommon
             channel.on_request("exit-status") do |ch,data|
               exit_code = data.read_long
               if exit_code != 0
-                raise "Bootstrap returned exit code #{exit_code}"
+                raise "Bootstrap returned exit code #{exit_code} and error description #{stderr_data} on command #{command}"
               end
             end
   
