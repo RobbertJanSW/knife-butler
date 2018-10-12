@@ -30,11 +30,6 @@ module KnifeButler
       # exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
 
 
-      puts "Fetching windows butler runner file from gem path..."
-      butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
-      butler_runner_windows_path = File.dirname(butler_runner_windows)
-      puts "Done. Path: #{butler_runner_windows_path}"
-
       # Re-run bootstrap with new command (simply tailing butler run wrapper script logfile)
       # until that file is deleted, and then check exit_status of .butler exit status reporting file
 
@@ -43,6 +38,8 @@ module KnifeButler
       berks_result = `bundle exec berks package`
       berks_zip = berks_result.split(' to ').last.chomp("\n")
       puts "ZIPFILE: #{berks_zip}"
+      
+      repo_name=File.basename(Dir.pwd)
 
       `tar -xvzf #{berks_zip}`
 
@@ -65,10 +62,22 @@ module KnifeButler
 
       # Push chef-solo.rb into the butler folder
       if platform_family(butler_data) == 'windows'
-        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
+        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb.erb')).first
       else
         chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo-linux.rb')).first
       end
+
+      variables[:repo_name] = File.basename(Dir.pwd)
+      File.open('./chef-solo.rb', 'w') do |file|
+        file.write(
+          ERB.new(
+            File.read(chef_solo_rb_path)
+          ).result(variables.instance_eval { binding })
+        )
+      end
+      chef_solo_rb_path = './chef-solo.rb'
+
+
       `cp #{chef_solo_rb_path} ./butler`
 
       # Push client.pem into the zip folder
@@ -185,8 +194,14 @@ module KnifeButler
       # Bootstrap our VM with the desired runlist
       if communicator_type(butler_data['test_config']) == 'winrm'
         puts "Configuring bootstrap call"
+
+        puts "Fetching windows butler runner file from gem path..."
+        butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1.erb')).first
+        butler_runner_windows_path = File.dirname(butler_runner_windows)
+        puts "Done. Path: #{butler_runner_windows_path}"
+
         bootstrap = Chef::Knife::BootstrapWindowsWinRM.new
-  
+
         bootstrap.name_args = [butler_data['test_config']['driver']['customize']['pf_ip_address']]
         bootstrap.config[:winrm_port] = butler_data['communicator_exposed_port']
         bootstrap.config[:winrm_password] = butler_data['server_password']
