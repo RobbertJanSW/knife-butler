@@ -183,7 +183,7 @@ module KnifeButler
 
         Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'],
           'bootstrap',
-          { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'] }
+          { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'], :non_interactive => true }
         ) do |ssh|
           ssh.scp.upload!(path_src, path_dest, { recursive: true })
         end
