@@ -197,7 +197,7 @@ module KnifeButler
         puts "Configuring bootstrap call"
 
         puts "Fetching windows butler runner file from gem path..."
-        butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1.erb')).first
+        butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
         butler_runner_windows_path = File.dirname(butler_runner_windows)
         puts "Done. Path: #{butler_runner_windows_path}"
 
