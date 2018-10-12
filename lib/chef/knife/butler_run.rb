@@ -235,8 +235,6 @@ module KnifeButler
 
         # send remote
         files_send('/tmp/chef_omnibus_install.sh', '/tmp/chef_omnibus_install.sh', butler_data)
-        # remote commmand: chmod to runnable
-        command_run('sudo sh chmod 755 /tmp/chef_omnibus_install.sh', butler_data)
 
         # remote command: "sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>"
         command_run('sudo sh /tmp/chef_omnibus_install.sh -P chef -v "12.21.4"', butler_data)
