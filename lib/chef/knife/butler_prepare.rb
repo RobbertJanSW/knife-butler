@@ -41,6 +41,13 @@ module KnifeButler
       str_random = (0...4).map { [rand(10)] }.join
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
+      puts "Building ZIP with cookbook data in seperate thread"
+      berks_thread << Thread.new() {
+        berks_result = `bundle exec berks package`
+        berks_zip = berks_result.split(' to ').last.chomp("\n")
+      }
+
+
       # Create VM
       server_create = Knifecosmic::CosmicServerCreate.new
 
@@ -63,10 +70,15 @@ module KnifeButler
       puts "End of detalis"
       butler_data['server_ip'] = server_details['public_ip']
       butler_data['server_password'] = server_details['passwordenabled'] ? server_details['password'] : butler_data['test_config']['driver']['customize']['vm_password']
-      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for the VM to settle into existance
-      sleep(5)
+      sleep(2)
+      
+      berks_thread.each(&:join)
+      
+      butler_data['berks_zip'] = berks_zip
+
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Create communicator forwardrule
       communicator_port = default_communicator_port(communicator_type(test_config))

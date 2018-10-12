@@ -34,11 +34,12 @@ module KnifeButler
       # until that file is deleted, and then check exit_status of .butler exit status reporting file
 
       # Prepare ZIP with chef-solo run:
-      puts "Building ZIP with cookbook data"
-      berks_result = `bundle exec berks package`
-      berks_zip = berks_result.split(' to ').last.chomp("\n")
+      # puts "Building ZIP with cookbook data"
+      # berks_result = `bundle exec berks package`
+      # berks_zip = berks_result.split(' to ').last.chomp("\n")
+      berks_zip = butler_data['berks_zip']
       puts "ZIPFILE: #{berks_zip}"
-      
+
       repo_name=File.basename(Dir.pwd)
 
       `tar -xvzf #{berks_zip}`
