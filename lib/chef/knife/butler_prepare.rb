@@ -102,7 +102,9 @@ module KnifeButler
       firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
       firewall_rule.run
 
-      berks_thread.join
+      berks_zip berks_thread.join.value
+      puts berks_zip
+      sleep(30)
       butler_data['berks_zip'] = berks_zip
 
       # Wait for communicator to become responsive:
