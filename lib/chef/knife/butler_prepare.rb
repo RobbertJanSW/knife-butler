@@ -74,7 +74,7 @@ module KnifeButler
       # Wait for the VM to settle into existance
       sleep(2)
       
-      berks_thread(&:join)
+      berks_thread.join
       
       butler_data['berks_zip'] = berks_zip
 
