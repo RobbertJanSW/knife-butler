@@ -247,7 +247,7 @@ module KnifeButler
 
         # Run Chef in zero mode
         runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
-        command_run("chef-client -z -E #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} -c /tmp/butler/chef-solo.rb -o #{runlist}", butler_data)
+        command_run("sudo chef-client -z -E #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} -c /tmp/butler/chef-solo.rb -o #{runlist}", butler_data)
         puts "Done."
 
 
