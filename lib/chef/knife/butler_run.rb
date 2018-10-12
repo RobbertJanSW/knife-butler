@@ -78,6 +78,7 @@ module KnifeButler
         )
       end
       chef_solo_rb_path = './chef-solo.rb'
+      `cat ./chef-solo.rb`
 
 
       `cp #{chef_solo_rb_path} ./butler`
