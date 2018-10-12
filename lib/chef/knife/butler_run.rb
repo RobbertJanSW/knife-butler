@@ -65,7 +65,7 @@ module KnifeButler
       if platform_family(butler_data) == 'windows'
         chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb.erb')).first
       else
-        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo-linux.rb')).first
+        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo-linux.rb.erb')).first
       end
 
       variables = OpenStruct.new
@@ -243,17 +243,9 @@ module KnifeButler
 
         # Stage Chef environment
         puts "Staging Linux Chef run"
-        butler_stage_linux = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_stage_linux.sh')).first
-        butler_stage_linux_path = File.dirname(butler_stage_linux)
-        puts "Pushing stage script..."
-        files_send(butler_stage_linux_path, '/tmp/butler_stage.sh', butler_data)
-        puts "..done"
-        repo_name=File.basename(Dir.pwd)
-        puts "Running stage script..."
-        command_run("sudo sh chmod 755 /tmp/butler_stage.sh", butler_data)
-        command_run("sudo sh /tmp/butler_stage.sh #{repo_name}", butler_data)
+        puts "Creating dummy validation key..."
+        command_run("sudo touch /tmp/butler/validation_key", butler_data)
         puts "...done"
-        command_run("sh cat /tmp/butler_stage.sh", butler_data)
 
         # Run Chef in zero mode
         runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
