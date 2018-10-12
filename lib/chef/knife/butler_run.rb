@@ -67,6 +67,7 @@ module KnifeButler
         chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo-linux.rb')).first
       end
 
+      variables = OpenStruct.new
       variables[:repo_name] = File.basename(Dir.pwd)
       File.open('./chef-solo.rb', 'w') do |file|
         file.write(
