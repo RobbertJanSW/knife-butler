@@ -74,8 +74,6 @@ module KnifeButler
       # Wait for the VM to settle into existance
       sleep(2)
 
-      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
-
       # Create communicator forwardrule
       communicator_port = default_communicator_port(communicator_type(test_config))
 
@@ -106,6 +104,8 @@ module KnifeButler
       puts berks_zip
       sleep(30)
       butler_data['berks_zip'] = berks_zip
+
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for communicator to become responsive:
       puts "Waiting for communicator port......"
