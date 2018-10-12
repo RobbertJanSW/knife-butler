@@ -73,9 +73,7 @@ module KnifeButler
 
       # Wait for the VM to settle into existance
       sleep(2)
-      
-      berks_thread.join
-      
+
       butler_data['berks_zip'] = berks_zip
 
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
@@ -105,6 +103,8 @@ module KnifeButler
       end
       firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
       firewall_rule.run
+
+      berks_thread.join
 
       # Wait for communicator to become responsive:
       puts "Waiting for communicator port......"
