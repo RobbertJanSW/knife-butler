@@ -42,7 +42,7 @@ module KnifeButler
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       puts "Building ZIP with cookbook data in seperate thread"
-      berks_thread << Thread.new() {
+      berks_thread = Thread.new() {
         berks_result = `bundle exec berks package`
         berks_zip = berks_result.split(' to ').last.chomp("\n")
       }
@@ -74,7 +74,7 @@ module KnifeButler
       # Wait for the VM to settle into existance
       sleep(2)
       
-      berks_thread.each(&:join)
+      berks_thread(&:join)
       
       butler_data['berks_zip'] = berks_zip
 
