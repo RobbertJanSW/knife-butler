@@ -20,7 +20,7 @@ module KnifeButler
     banner "knife butler clean"
 
     def run
-      test_config = config_fetch
+      # test_config = config_fetch
       butler_data = butler_data_fetch
 
       puts butler_data
@@ -29,9 +29,9 @@ module KnifeButler
       server_delete = Knifecosmic::CosmicServerDelete.new
 
       server_delete.name_args = [butler_data['server_name']]
-      server_delete.config[:cosmic_url] = "https://#{test_config['driver']['customize']['host']}/client/api"
-      server_delete.config[:cosmic_api_key] = test_config['driver']['customize']['api_key']
-      server_delete.config[:cosmic_secret_key] = test_config['driver']['customize']['secret_key']
+      server_delete.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
+      server_delete.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
+      server_delete.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
       server_delete.config[:yes] = true
       puts "Deleting VM..."
       begin

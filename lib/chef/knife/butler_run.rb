@@ -2,16 +2,16 @@
 # Author:: Robbert-Jan Sperna Weiland (<rspernaweiland@schubergphilis.com>)
 #
 
+require 'chef/knife/butler_common'
 require 'chef/knife'
 require 'json'
 require 'rubygems'
 
 module KnifeButler
   class ButlerRun < Chef::Knife
+    include ButlerCommon
 
     deps do
-      require 'chef/knife/winops_bootstrap_windows_winrm'
-      Chef::Knife::BootstrapWindowsWinRM.load_deps
       require 'yaml'
       require 'erb'
       require 'socket'
@@ -21,7 +21,7 @@ module KnifeButler
     banner "knife butler run"
 
     def run
-      test_config = config_fetch
+      # test_config = config_fetch
       butler_data = butler_data_fetch
 
       # Prepare chef-solo files
@@ -30,19 +30,17 @@ module KnifeButler
       # exec ( "echo dbskjhdbskj > .\butler_bootstrap_data\testfile" )
 
 
-      puts "Fetching windows butler runner file from gem path..."
-      butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
-      butler_runner_windows_path = File.dirname(butler_runner_windows)
-      puts "Done. Path: #{butler_runner_windows_path}"
-
       # Re-run bootstrap with new command (simply tailing butler run wrapper script logfile)
       # until that file is deleted, and then check exit_status of .butler exit status reporting file
 
       # Prepare ZIP with chef-solo run:
-      puts "Building ZIP with cookbook data"
-      berks_result = `bundle exec berks package`
-      berks_zip = berks_result.split(' to ').last.chomp("\n")
+      # puts "Building ZIP with cookbook data"
+      # berks_result = `bundle exec berks package`
+      # berks_zip = berks_result.split(' to ').last.chomp("\n")
+      berks_zip = butler_data['berks_zip']
       puts "ZIPFILE: #{berks_zip}"
+
+      repo_name=File.basename(Dir.pwd)
 
       `tar -xvzf #{berks_zip}`
 
@@ -64,7 +62,23 @@ module KnifeButler
       `echo >> ./butler/roles/dummy`
 
       # Push chef-solo.rb into the butler folder
-      chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb')).first
+      if platform_family(butler_data) == 'windows'
+        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo.rb.erb')).first
+      else
+        chef_solo_rb_path = Gem.find_files(File.join('chef', 'knife', 'resources', 'templates', 'chef-solo-linux.rb.erb')).first
+      end
+
+      variables = OpenStruct.new
+      variables[:repo_name] = File.basename(Dir.pwd)
+      File.open('./chef-solo.rb', 'w') do |file|
+        file.write(
+          ERB.new(
+            File.read(chef_solo_rb_path)
+          ).result(variables.instance_eval { binding })
+        )
+      end
+      chef_solo_rb_path = './chef-solo.rb'
+
       `cp #{chef_solo_rb_path} ./butler`
 
       # Push client.pem into the zip folder
@@ -74,38 +88,18 @@ module KnifeButler
       # Push cookbook folder to test VM
       sleep(1)
       puts "PUSHING FILES TO VM"
-      opts = {
-        endpoint: "http://#{test_config['driver']['customize']['pf_ip_address']}:#{butler_data['port_exposed_winrm']}/wsman",
-        user: 'Administrator',
-        password: butler_data['server_password']
-      }
-      connection = WinRM::Connection.new(opts)
-      file_manager = WinRM::FS::FileManager.new(connection)
-      file_manager.upload('butler', "C:\\Programdata\\")
+
+      if platform_family(butler_data) == 'windows'
+        dest_path = "C:\\Programdata\\"
+      else
+        dest_path = "/tmp/"
+      end
+      files_send('butler', dest_path, butler_data)
 
       sleep(1)
 
-      # Bootstrap our VM with the desired runlist
-      puts "Configuring bootstrap call"
-      bootstrap = Chef::Knife::BootstrapWindowsWinRM.new
+      converge_runlist(butler_data)
 
-      bootstrap.name_args = [test_config['driver']['customize']['pf_ip_address']]
-      bootstrap.config[:winrm_port] = butler_data['port_exposed_winrm']
-      bootstrap.config[:winrm_password] = butler_data['server_password']
-      bootstrap.config[:winrm_user] = 'Administrator'
-      bootstrap.config[:bootstrap_version] = test_config['provisioner']['require_chef_omnibus']
-      bootstrap.config[:chef_node_name] = butler_data['server_name']
-      bootstrap.config[:chef_server] = false
-      bootstrap.config[:payload_folder] = butler_runner_windows_path
-      repo_name=File.basename(Dir.pwd)
-
-      runlist = test_config['suites'][0]['run_list'].join(",")      
-      bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{test_config['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
-      bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
-      # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
-
-      puts "Starting bootstrap.."
-      bootstrap.run
       puts "Done!"
     end
 
@@ -164,6 +158,112 @@ module KnifeButler
           end
         end
         thr.join
+      end
+    end
+
+    def files_send(path_src, path_dest, butler_data)
+      if communicator_type(butler_data['test_config']) == 'winrm'
+        require 'chef/knife/winops_bootstrap_windows_winrm'
+        Chef::Knife::BootstrapWindowsWinRM.load_deps
+  
+        opts = {
+          endpoint: "http://#{butler_data['test_config']['driver']['customize']['pf_ip_address']}:#{butler_data['communicator_exposed_port']}/wsman",
+          user: 'Administrator',
+          password: butler_data['server_password']
+        }
+        connection = WinRM::Connection.new(opts)
+        file_manager = WinRM::FS::FileManager.new(connection)
+        file_manager.upload('butler', path_dest)
+      elsif communicator_type(butler_data['test_config']) == 'ssh'
+        require 'net/scp'
+
+        puts "USING PASSWORD: #{butler_data['server_password']}"
+        puts "and PORT: #{butler_data['communicator_exposed_port']}"
+        puts "and ip: #{butler_data['test_config']['driver']['customize']['pf_ip_address']}"
+
+        Net::SSH.start(butler_data['test_config']['driver']['customize']['pf_ip_address'],
+          'bootstrap',
+          { password: "#{butler_data['server_password']}", port: butler_data['communicator_exposed_port'], :non_interactive => true }
+        ) do |ssh|
+          ssh.scp.upload!(path_src, path_dest, { recursive: true })
+        end
+
+      end
+    end
+
+    def converge_runlist(butler_data)
+      # Bootstrap our VM with the desired runlist
+      if communicator_type(butler_data['test_config']) == 'winrm'
+        puts "Configuring bootstrap call"
+
+        puts "Fetching windows butler runner file from gem path..."
+        butler_runner_windows = Gem.find_files(File.join('chef', 'knife', 'resources', 'butler_runner_windows.ps1')).first
+        butler_runner_windows_path = File.dirname(butler_runner_windows)
+        puts "Done. Path: #{butler_runner_windows_path}"
+
+        bootstrap = Chef::Knife::BootstrapWindowsWinRM.new
+
+        bootstrap.name_args = [butler_data['test_config']['driver']['customize']['pf_ip_address']]
+        bootstrap.config[:winrm_port] = butler_data['communicator_exposed_port']
+        bootstrap.config[:winrm_password] = butler_data['server_password']
+        bootstrap.config[:winrm_user] = 'Administrator'
+        bootstrap.config[:bootstrap_version] = butler_data['test_config']['provisioner']['require_chef_omnibus']
+        bootstrap.config[:chef_node_name] = butler_data['server_name']
+        bootstrap.config[:chef_server] = false
+        bootstrap.config[:payload_folder] = butler_runner_windows_path
+        repo_name=File.basename(Dir.pwd)
+  
+        runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
+        bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
+        bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
+        # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
+
+        puts "Starting bootstrap.."
+        bootstrap.run
+      elsif communicator_type(butler_data['test_config']) == 'ssh'
+        # On Linux, we use bootstrap only to install the desired Chef version.
+        uri = URI.parse("https://omnitruck-direct.chef.io")
+        
+        request = Net::HTTP.new(uri.host, uri.port)
+        request.use_ssl = true
+        request.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        response = request.get("/chef/install.sh")
+
+        open('/tmp/chef_omnibus_install.sh', 'wb') do |file|
+          file << response.body
+        end
+
+        # send remote
+        files_send('/tmp/chef_omnibus_install.sh', '/tmp/chef_omnibus_install.sh', butler_data)
+
+        # remote command: "sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>"
+        command_run('sudo sh /tmp/chef_omnibus_install.sh -P chef -v "12.21.4"', butler_data)
+
+        # Stage Chef environment
+        puts "Staging Linux Chef run"
+        puts "Creating dummy validation key..."
+        command_run("sudo touch /tmp/butler/validation_key", butler_data)
+        puts "...done"
+
+        # Run Chef in zero mode
+        runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
+        command_run("sudo chef-client -z -E #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} -c /tmp/butler/chef-solo.rb -o #{runlist}", butler_data)
+        puts "Done."
+
+
+#        bootstrap = Chef::Knife::Bootstrap.new
+#
+#        bootstrap.name_args = [butler_data['test_config']['driver']['customize']['pf_ip_address']]
+#        bootstrap.config[:ssh_password] = butler_data['server_password']
+#        bootstrap.config[:bootstrap_version] = butler_data['test_config']['provisioner']['require_chef_omnibus']
+#        bootstrap.config[:chef_node_name] = butler_data['server_name']
+#        puts "Starting bootstrap.."
+#        bootstrap.run
+        puts "Done"
+
+        # Then, SSH into the box to kick off the Chef-zero run we want:
+        # bla
+
       end
     end
   end # class
