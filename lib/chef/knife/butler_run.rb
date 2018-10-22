@@ -3,6 +3,7 @@
 #
 
 require 'chef/knife/butler_common'
+require 'chef/knife/butler_clean'
 require 'chef/knife'
 require 'json'
 require 'rubygems'
@@ -99,6 +100,10 @@ module KnifeButler
       sleep(1)
 
       converge_runlist(butler_data)
+
+      # cleanup
+      cleanup = KnifeButler::ButlerClean.new()
+      cleanup.run
 
       puts "Done!"
     end
