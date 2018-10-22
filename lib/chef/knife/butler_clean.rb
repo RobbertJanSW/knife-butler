@@ -23,8 +23,6 @@ module KnifeButler
       # test_config = config_fetch
       butler_data = butler_data_fetch
 
-      puts butler_data
-      
       # Destroy VM
       server_delete = Knifecosmic::CosmicServerDelete.new
 
@@ -36,8 +34,8 @@ module KnifeButler
       puts "Deleting VM..."
       begin
         vm_delete_details = server_delete.run
-      rescue
-        nil
+      rescue => ex
+        puts "#{ex.backtrace}: #{ex.message} (#{ex.class})"
       end
       puts "Done!"
 
