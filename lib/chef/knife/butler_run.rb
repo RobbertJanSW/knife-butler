@@ -17,6 +17,7 @@ module KnifeButler
       require 'erb'
       require 'socket'
       require 'winrm-fs'
+      KnifeButler::ButlerClean.load_deps
     end
 
     banner "knife butler run"
