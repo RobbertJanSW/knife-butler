@@ -93,6 +93,7 @@ module KnifeButler
       firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
       firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
       firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
+      firewall_rule.config[:syncrequest] = true
       firewall_rule.name_args = [butler_data['server_name']]
       butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
         firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
