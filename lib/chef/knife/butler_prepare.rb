@@ -106,11 +106,12 @@ module KnifeButler
         firewall_result = firewall_rule.rules_created
 
         # This way makes sure if the last one fails, the other one gets cleaned up:
-        firewallrules_aclids = []
-        firewallrules_aclids << firewall_result[0]['networkacl']['aclid']
-        firewallrules_aclids << firewall_result[1]['networkacl']['aclid']
-        butler_data['firewallrules_aclids'] = firewallrules_aclids
-        puts butler_data['firewallrules_aclids']
+        firewallrules_ids = []
+        firewallrules_ids << firewall_result[0]['networkacl']['id']
+        firewallrules_ids << firewall_result[1]['networkacl']['id']
+        butler_data['firewallrules_ids'] = firewallrules_ids
+        puts "IDs:"
+        puts butler_data['firewallrules_ids']
       rescue Exception => e
         # cleanup
         File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store

@@ -26,7 +26,7 @@ module KnifeButler
       butler_data = butler_data_fetch
 
       # Remove ACL rules
-      butler_data['firewallrules_aclids'].each do |firewallrule_id|
+      butler_data['firewallrules_ids'].each do |firewallrule_id|
         firewallrule_delete = Knifecosmic::CosmicFirewallruleDelete.new
         firewallrule_delete.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
         firewallrule_delete.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
