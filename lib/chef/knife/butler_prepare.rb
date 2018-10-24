@@ -111,6 +111,7 @@ module KnifeButler
         File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
         cleanup = KnifeButler::ButlerClean.new()
         cleanup.run
+        puts exception.backtrace
         raise 'Failed'
       end
 
