@@ -89,20 +89,37 @@ module KnifeButler
       puts "Done!"
 
       # Firewall rule for communicator
-      firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
-      firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
-      firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
-      firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
-      firewall_rule.name_args = [butler_data['server_name']]
-      butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
-        firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
+      begin
+        firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
+        firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
+        firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
+        firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
+        firewall_rule.name_args = [butler_data['server_name']]
+        butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
+          firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
+        end
+        firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
+        firewall_rule.run
+  
+        firewall_result = firewall_rule.rules_created
+        puts firewall_result
+        puts firewall_result['networkacl']['number'].to_s
+      rescue
+        firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
+        firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
+        firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
+        firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
+        firewall_rule.name_args = [butler_data['server_name']]
+        butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
+          firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
+        end
+        firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
+        firewall_rule.run
+  
+        firewall_result = firewall_rule.rules_created
+        puts firewall_result
+        puts firewall_result['networkacl']['number'].to_s
       end
-      firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
-      firewall_rule.run
-
-      firewall_result = firewall_rule.rules_created
-      puts firewall_result
-      puts firewall_result['networkacl']['number'].to_s
 
       berks_zip=berks_thread.join.value
       puts berks_zip
