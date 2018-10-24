@@ -100,6 +100,9 @@ module KnifeButler
       firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
       firewall_rule.run
 
+      firewall_result = firewall_rule.rules_created
+      puts firewall_result
+
       berks_zip=berks_thread.join.value
       puts berks_zip
       sleep(30)
