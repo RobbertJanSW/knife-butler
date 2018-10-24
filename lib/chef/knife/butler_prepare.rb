@@ -108,6 +108,7 @@ module KnifeButler
         puts firewall_result['networkacl']['number'].to_s
       rescue
         # cleanup
+        File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
         cleanup = KnifeButler::ButlerClean.new()
         cleanup.run
         raise 'Failed'
