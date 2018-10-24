@@ -105,7 +105,7 @@ module KnifeButler
 
         firewall_result = firewall_rule.rules_created
 
-        firewallrules_aclids = [firewall_result.[0]['networkacl']['aclid'], firewall_result.[1]['networkacl']['aclid']]
+        firewallrules_aclids = [firewall_result[0]['networkacl']['aclid'], firewall_result[1]['networkacl']['aclid']]
         butler_data['firewallrules_aclids'] = firewallrules_aclids
         puts butler_data['firewallrules_aclids']
       rescue Exception => e
