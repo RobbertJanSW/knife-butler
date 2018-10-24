@@ -102,10 +102,12 @@ module KnifeButler
         end
         firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
         firewall_rule.run
-  
+
         firewall_result = firewall_rule.rules_created
-        puts firewall_result
-        puts firewall_result.first['networkacl']['number'].to_s
+
+        firewallrules_aclids = [firewall_result.[0]['networkacl']['aclid'], firewall_result.[1]['networkacl']['aclid']]
+        butler_data['firewallrules_aclids'] = firewallrules_aclids
+        puts butler_data['firewallrules_aclids']
       rescue Exception => e
         # cleanup
         File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
