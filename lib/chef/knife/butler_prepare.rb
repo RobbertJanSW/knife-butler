@@ -102,7 +102,7 @@ module KnifeButler
 
       firewall_result = firewall_rule.rules_created
       puts firewall_result
-      puts firewall_result['networkacl']['number']
+      puts firewall_result['networkacl']['number'].to_s
 
       berks_zip=berks_thread.join.value
       puts berks_zip
