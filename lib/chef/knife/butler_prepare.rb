@@ -106,12 +106,13 @@ module KnifeButler
         firewall_result = firewall_rule.rules_created
         puts firewall_result
         puts firewall_result['networkacl']['number'].to_s
-      rescue
+      rescue Exception => e
         # cleanup
         File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
         cleanup = KnifeButler::ButlerClean.new()
         cleanup.run
-        puts exception.backtrace
+        puts "#{e.class}: #{e.message}"
+        puts e.backtrace
         raise 'Failed'
       end
 
