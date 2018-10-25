@@ -31,7 +31,7 @@ module KnifeButler
         firewallrule_delete.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
         firewallrule_delete.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
         firewallrule_delete.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
-        firewallrule_delete.config[:id] = firewallrule_id
+        firewallrule_delete.name_args = [firewallrule_id]
         firewallrule_delete.run
       end
 
