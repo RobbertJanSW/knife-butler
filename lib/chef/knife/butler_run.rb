@@ -101,7 +101,7 @@ module KnifeButler
       chef_solo_rb_path = './chef-solo.rb'
 
       if platform_family_local == 'windows'
-        `XCOPY /E /H /Y /C #{chef_solo_rb_path} butler\ `
+        `XCOPY /E /H /Y /C "#{chef_solo_rb_path}" butler\ `
       else
         `cp #{chef_solo_rb_path} ./butler`
       end
