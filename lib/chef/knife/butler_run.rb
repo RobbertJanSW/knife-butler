@@ -101,6 +101,7 @@ module KnifeButler
       chef_solo_rb_path = './chef-solo.rb'
 
       if platform_family_local == 'windows'
+        puts "XCOPY /E /H /Y /C ".\\#{chef_solo_rb_path}" butler\\ "
         `XCOPY /E /H /Y /C ".\\#{chef_solo_rb_path}" butler\\ `
       else
         `cp #{chef_solo_rb_path} ./butler`
@@ -109,7 +110,8 @@ module KnifeButler
       # Push client.pem into the zip folder
       chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
       if platform_family_local == 'windows'
-        `XCOPY /E /H /Y /C #{chef_client_pem} butler\\ `
+        puts "XCOPY /E /H /Y /C ".\\#{chef_client_pem}" butler\\ "
+        `XCOPY /E /H /Y /C ".\\#{chef_client_pem}" butler\\ `
       else
         `cp #{chef_client_pem} ./butler`
       end
