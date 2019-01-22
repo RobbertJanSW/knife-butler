@@ -46,22 +46,41 @@ module KnifeButler
 
       `tar -xvzf #{berks_zip}`
 
-      `mkdir ./butler`
-      `mv ./cookbooks ./butler/`
-      `mkdir ./butler/checksums`
-      `echo >> ./butler/checksums/dummy`
-      `mkdir ./butler/cache`
-      `echo >> ./butler/cache/dummy`
-      `mkdir ./butler/backup`
-      `echo >> ./butler/backup/dummy`
-      `mkdir ./butler/data_bags`
-      `echo >> ./butler/data_bags/dummy`
-      `mkdir ./butler/environments`
-      `echo >> ./butler/environments/dummy`
-      `mkdir ./butler/nodes`
-      `echo >> ./butler/nodes/dummy`
-      `mkdir ./butler/roles`
-      `echo >> ./butler/roles/dummy`
+      if platform_family_local == 'windows'
+        `mkdir butler`
+        `XCOPY /E /H /Y /C "cookbooks\*.*" butler\ `
+        `mkdir butler\checksums`
+        `echo >> ./butler/checksums/dummy`
+        `mkdir butler\cache`
+        `echo >> ./butler/cache/dummy`
+        `mkdir butler\backup`
+        `echo >> ./butler/backup/dummy`
+        `mkdir butler\data_bags`
+        `echo >> ./butler/data_bags/dummy`
+        `mkdir butler\environments`
+        `echo >> ./butler/environments/dummy`
+        `mkdir butler\nodes`
+        `echo >> ./butler/nodes/dummy`
+        `mkdir butler\roles`
+        `echo >> ./butler/roles/dummy`
+      else
+        `mkdir ./butler`
+        `mv ./cookbooks ./butler/`
+        `mkdir ./butler/checksums`
+        `echo >> ./butler/checksums/dummy`
+        `mkdir ./butler/cache`
+        `echo >> ./butler/cache/dummy`
+        `mkdir ./butler/backup`
+        `echo >> ./butler/backup/dummy`
+        `mkdir ./butler/data_bags`
+        `echo >> ./butler/data_bags/dummy`
+        `mkdir ./butler/environments`
+        `echo >> ./butler/environments/dummy`
+        `mkdir ./butler/nodes`
+        `echo >> ./butler/nodes/dummy`
+        `mkdir ./butler/roles`
+        `echo >> ./butler/roles/dummy`
+      end
 
       # Push chef-solo.rb into the butler folder
       if platform_family(butler_data) == 'windows'
