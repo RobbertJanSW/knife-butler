@@ -50,7 +50,7 @@ module KnifeButler
         `mkdir butler`
         `XCOPY /E /H /Y /C cookbooks\\*.* butler\\`
         `mkdir butler\\checksums`
-        `echo >> \\butler\\checksums\\dummy`
+        `echo >> butler\\checksums\\dummy`
         `mkdir butler\\cache`
         `echo >> butler\\cache\\dummy`
         `mkdir butler\\backup`
@@ -101,7 +101,7 @@ module KnifeButler
       chef_solo_rb_path = './chef-solo.rb'
 
       if platform_family_local == 'windows'
-        `XCOPY /E /H /Y /C "#{chef_solo_rb_path}" butler\ `
+        `XCOPY /E /H /Y /C ".\\#{chef_solo_rb_path}" butler\\ `
       else
         `cp #{chef_solo_rb_path} ./butler`
       end
@@ -109,7 +109,7 @@ module KnifeButler
       # Push client.pem into the zip folder
       chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
       if platform_family_local == 'windows'
-        `XCOPY /E /H /Y /C #{chef_client_pem} butler\ `
+        `XCOPY /E /H /Y /C #{chef_client_pem} butler\\ `
       else
         `cp #{chef_client_pem} ./butler`
       end
