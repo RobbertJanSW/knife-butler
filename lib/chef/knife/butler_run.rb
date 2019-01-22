@@ -63,6 +63,7 @@ module KnifeButler
         `echo >> butler\\nodes\\dummy`
         `mkdir butler\\roles`
         `echo >> butler\\roles\\dummy`
+        puts "XCOPY /E /H /Y /C test cookbooks\\#{repo_name}\\test"
         `XCOPY /E /H /Y /C test cookbooks\\#{repo_name}\\test`
       else
         `mkdir ./butler`
