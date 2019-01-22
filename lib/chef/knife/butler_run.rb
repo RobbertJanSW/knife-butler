@@ -82,7 +82,7 @@ module KnifeButler
         `echo >> ./butler/nodes/dummy`
         `mkdir ./butler/roles`
         `echo >> ./butler/roles/dummy`
-        `mv test cookbooks/#{repo_name}/`
+        `mv test butler/#{repo_name}/`
       end
 
       # Push chef-solo.rb into the butler folder
