@@ -12,7 +12,9 @@ module KnifeButler
       require 'chef/knife/bootstrap'
       # Depend on knife-cosmic:
       require 'chef/knife/cosmic_server_delete'
+      require 'chef/knife/cosmic_firewallrule_delete'
       Knifecosmic::CosmicServerDelete.load_deps
+      Knifecosmic::CosmicFirewallruleDelete.load_deps
       require 'yaml'
       require "erb"
     end
@@ -23,8 +25,16 @@ module KnifeButler
       # test_config = config_fetch
       butler_data = butler_data_fetch
 
-      puts butler_data
-      
+      # Remove ACL rules
+      butler_data['firewallrules_ids'].each do |firewallrule_id|
+        firewallrule_delete = Knifecosmic::CosmicFirewallruleDelete.new
+        firewallrule_delete.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
+        firewallrule_delete.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
+        firewallrule_delete.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
+        firewallrule_delete.name_args = [firewallrule_id]
+        firewallrule_delete.run
+      end
+
       # Destroy VM
       server_delete = Knifecosmic::CosmicServerDelete.new
 
@@ -36,8 +46,8 @@ module KnifeButler
       puts "Deleting VM..."
       begin
         vm_delete_details = server_delete.run
-      rescue
-        nil
+      rescue => ex
+        puts "#{ex.backtrace}: #{ex.message} (#{ex.class})"
       end
       puts "Done!"
 

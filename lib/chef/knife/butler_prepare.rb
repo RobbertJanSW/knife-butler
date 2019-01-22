@@ -4,6 +4,7 @@
 
 require 'chef/knife'
 require 'chef/knife/butler_common'
+require 'chef/knife/butler_clean'
 require 'json'
 
 module KnifeButler
@@ -21,6 +22,7 @@ module KnifeButler
       require "erb"
       require 'socket'
       require 'timeout'
+      KnifeButler::ButlerClean.load_deps
     end
 
     banner "knife butler prepare"
@@ -89,16 +91,36 @@ module KnifeButler
       puts "Done!"
 
       # Firewall rule for communicator
-      firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
-      firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
-      firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
-      firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
-      firewall_rule.name_args = [butler_data['server_name']]
-      butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
-        firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
+      begin
+        firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
+        firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
+        firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
+        firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
+        firewall_rule.name_args = [butler_data['server_name']]
+        butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
+          firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
+        end
+        firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
+        firewall_rule.run
+
+        firewall_result = firewall_rule.rules_created
+
+        # This way makes sure if the last one fails, the other one gets cleaned up:
+        firewallrules_ids = []
+        firewallrules_ids << firewall_result[0]['networkacl']['id']
+        firewallrules_ids << firewall_result[1]['networkacl']['id']
+        butler_data['firewallrules_ids'] = firewallrules_ids
+        puts "IDs:"
+        puts butler_data['firewallrules_ids']
+      rescue Exception => e
+        # cleanup
+        File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
+        cleanup = KnifeButler::ButlerClean.new()
+        cleanup.run
+        puts "#{e.class}: #{e.message}"
+        puts e.backtrace
+        raise 'Failed'
       end
-      firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
-      firewall_rule.run
 
       berks_zip=berks_thread.join.value
       puts berks_zip
