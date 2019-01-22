@@ -98,7 +98,7 @@ module KnifeButler
           ).result(variables.instance_eval { binding })
         )
       end
-      chef_solo_rb_path = './chef-solo.rb'
+      chef_solo_rb_path = 'chef-solo.rb'
 
       if platform_family_local == 'windows'
         puts "XCOPY /E /H /Y /C #{chef_solo_rb_path} butler\\ "
