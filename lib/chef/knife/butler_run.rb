@@ -100,11 +100,19 @@ module KnifeButler
       end
       chef_solo_rb_path = './chef-solo.rb'
 
-      `cp #{chef_solo_rb_path} ./butler`
+      if platform_family_local == 'windows'
+        `XCOPY /E /H /Y /C #{chef_solo_rb_path} butler\ `
+      else
+        `cp #{chef_solo_rb_path} ./butler`
+      end
 
       # Push client.pem into the zip folder
       chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
-      `cp #{chef_client_pem} ./butler`
+      if platform_family_local == 'windows'
+        `XCOPY /E /H /Y /C #{chef_client_pem} butler\ `
+      else
+        `cp #{chef_client_pem} ./butler`
+      end
 
       # Push cookbook folder to test VM
       sleep(1)
