@@ -48,22 +48,21 @@ module KnifeButler
 
       if platform_family_local == 'windows'
         `mkdir butler`
-        puts "XCOPY /E /H /Y /C cookbooks\*.* butler\ "
-        `XCOPY /E /H /Y /C cookbooks\*.* butler\ `
-        `mkdir butler\checksums`
-        `echo >> ./butler/checksums/dummy`
-        `mkdir butler\cache`
-        `echo >> ./butler/cache/dummy`
-        `mkdir butler\backup`
-        `echo >> ./butler/backup/dummy`
-        `mkdir butler\data_bags`
-        `echo >> ./butler/data_bags/dummy`
-        `mkdir butler\environments`
-        `echo >> ./butler/environments/dummy`
-        `mkdir butler\nodes`
-        `echo >> ./butler/nodes/dummy`
-        `mkdir butler\roles`
-        `echo >> ./butler/roles/dummy`
+        `XCOPY /E /H /Y /C cookbooks\\*.* butler\\`        `
+        `mkdir butler\\checksums`
+        `echo >> \\butler\\checksums\\dummy`
+        `mkdir butler\\cache`
+        `echo >> butler\\cache\\dummy`
+        `mkdir butler\\backup`
+        `echo >> butler\\backup\\dummy`
+        `mkdir butler\\data_bags`
+        `echo >> butler\\data_bags\\dummy`
+        `mkdir butler\\environments`
+        `echo >> butler\\environments\\dummy`
+        `mkdir butler\\nodes`
+        `echo >> butler\\nodes\\dummy`
+        `mkdir butler\\roles`
+        `echo >> butler\\roles\\dummy`
       else
         `mkdir ./butler`
         `mv ./cookbooks ./butler/`
