@@ -110,7 +110,7 @@ module KnifeButler
       # Push client.pem into the zip folder
       chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
       if platform_family_local == 'windows'
-        puts "XCOPY /E /H /Y /C #{chef_client_pem} butler\\ "
+        puts "XCOPY #{chef_client_pem} butler\\ "
         `XCOPY #{chef_client_pem} butler\\ `
       else
         `cp #{chef_client_pem} ./butler`
