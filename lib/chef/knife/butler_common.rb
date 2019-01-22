@@ -26,8 +26,10 @@ module ButlerCommon
   end
 
   def platform_family_local()
-    if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    if ((/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil)
       'windows'
+    else
+      'linux'
     end
   end
 
