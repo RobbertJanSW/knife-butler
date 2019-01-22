@@ -1,4 +1,4 @@
-/Y /C ".\\#{chef_cli#
+#
 # Author:: Robbert-Jan Sperna Weiland (<rspernaweiland@schubergphilis.com>)
 #
 
