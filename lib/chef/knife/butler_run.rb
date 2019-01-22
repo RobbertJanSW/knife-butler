@@ -48,6 +48,7 @@ module KnifeButler
 
       if platform_family_local == 'windows'
         `mkdir butler`
+        puts "XCOPY /E /H /Y /C cookbooks\*.* butler\ "
         `XCOPY /E /H /Y /C cookbooks\*.* butler\ `
         `mkdir butler\checksums`
         `echo >> ./butler/checksums/dummy`
