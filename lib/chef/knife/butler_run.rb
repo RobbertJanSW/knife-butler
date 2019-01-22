@@ -63,6 +63,7 @@ module KnifeButler
         `echo >> butler\\nodes\\dummy`
         `mkdir butler\\roles`
         `echo >> butler\\roles\\dummy`
+        `XCOPY /E /H /Y /C test cookbooks\\#{repo_name}\\test`
       else
         `mkdir ./butler`
         `mv ./cookbooks ./butler/`
@@ -80,6 +81,7 @@ module KnifeButler
         `echo >> ./butler/nodes/dummy`
         `mkdir ./butler/roles`
         `echo >> ./butler/roles/dummy`
+        `mv test cookbooks/#{repo_name}/`
       end
 
       # Push chef-solo.rb into the butler folder
