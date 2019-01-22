@@ -91,7 +91,7 @@ module KnifeButler
 
       variables = OpenStruct.new
       variables[:repo_name] = File.basename(Dir.pwd)
-      File.open('./chef-solo.rb', 'w') do |file|
+      File.open('chef-solo.rb', 'w') do |file|
         file.write(
           ERB.new(
             File.read(chef_solo_rb_path)
