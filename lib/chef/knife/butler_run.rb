@@ -46,22 +46,45 @@ module KnifeButler
 
       `tar -xvzf #{berks_zip}`
 
-      `mkdir ./butler`
-      `mv ./cookbooks ./butler/`
-      `mkdir ./butler/checksums`
-      `echo >> ./butler/checksums/dummy`
-      `mkdir ./butler/cache`
-      `echo >> ./butler/cache/dummy`
-      `mkdir ./butler/backup`
-      `echo >> ./butler/backup/dummy`
-      `mkdir ./butler/data_bags`
-      `echo >> ./butler/data_bags/dummy`
-      `mkdir ./butler/environments`
-      `echo >> ./butler/environments/dummy`
-      `mkdir ./butler/nodes`
-      `echo >> ./butler/nodes/dummy`
-      `mkdir ./butler/roles`
-      `echo >> ./butler/roles/dummy`
+      if platform_family_local == 'windows'
+        `mkdir butler`
+        `mv cookbooks butler\\`
+        `mkdir butler\\checksums`
+        `echo >> butler\\checksums\\dummy`
+        `mkdir butler\\cache`
+        `echo >> butler\\cache\\dummy`
+        `mkdir butler\\backup`
+        `echo >> butler\\backup\\dummy`
+        `mkdir butler\\data_bags`
+        `echo >> butler\\data_bags\\dummy`
+        `mkdir butler\\environments`
+        `echo >> butler\\environments\\dummy`
+        `mkdir butler\\nodes`
+        `echo >> butler\\nodes\\dummy`
+        `mkdir butler\\roles`
+        `echo >> butler\\roles\\dummy`
+        puts "XCOPY /E /H /Y /C test butler\\cookbooks\\#{repo_name}\\test"
+        temppathy = "butler\\cookbooks\\#{repo_name}\\"
+        `mv test #{temppathy}`
+      else
+        `mkdir ./butler`
+        `mv ./cookbooks ./butler/`
+        `mkdir ./butler/checksums`
+        `echo >> ./butler/checksums/dummy`
+        `mkdir ./butler/cache`
+        `echo >> ./butler/cache/dummy`
+        `mkdir ./butler/backup`
+        `echo >> ./butler/backup/dummy`
+        `mkdir ./butler/data_bags`
+        `echo >> ./butler/data_bags/dummy`
+        `mkdir ./butler/environments`
+        `echo >> ./butler/environments/dummy`
+        `mkdir ./butler/nodes`
+        `echo >> ./butler/nodes/dummy`
+        `mkdir ./butler/roles`
+        `echo >> ./butler/roles/dummy`
+        `mv test butler/#{repo_name}/`
+      end
 
       # Push chef-solo.rb into the butler folder
       if platform_family(butler_data) == 'windows'
@@ -72,20 +95,30 @@ module KnifeButler
 
       variables = OpenStruct.new
       variables[:repo_name] = File.basename(Dir.pwd)
-      File.open('./chef-solo.rb', 'w') do |file|
+      File.open('chef-solo.rb', 'w') do |file|
         file.write(
           ERB.new(
             File.read(chef_solo_rb_path)
           ).result(variables.instance_eval { binding })
         )
       end
-      chef_solo_rb_path = './chef-solo.rb'
+      chef_solo_rb_path = 'chef-solo.rb'
 
-      `cp #{chef_solo_rb_path} ./butler`
+      if platform_family_local == 'windows'
+        puts "XCOPY #{chef_solo_rb_path} butler\\ "
+        `XCOPY #{chef_solo_rb_path} butler\\ `
+      else
+        `cp #{chef_solo_rb_path} ./butler`
+      end
 
       # Push client.pem into the zip folder
       chef_client_pem = Gem.find_files(File.join('chef', 'knife', 'resources', 'client.pem')).first
-      `cp #{chef_client_pem} ./butler`
+      if platform_family_local == 'windows'
+        puts "XCOPY #{chef_client_pem} butler\\ "
+        `XCOPY #{chef_client_pem} butler\\ `
+      else
+        `cp #{chef_client_pem} ./butler`
+      end
 
       # Push cookbook folder to test VM
       sleep(1)

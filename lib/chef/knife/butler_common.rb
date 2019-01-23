@@ -25,6 +25,14 @@ module ButlerCommon
     end
   end
 
+  def platform_family_local()
+    if ((/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil)
+      'windows'
+    else
+      'linux'
+    end
+  end
+
   def command_run(command, butler_data)
     if communicator_type(butler_data['test_config']) == 'winrm'
       require 'winrm'

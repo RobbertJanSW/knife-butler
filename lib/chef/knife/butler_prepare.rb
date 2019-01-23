@@ -107,8 +107,9 @@ module KnifeButler
 
         # This way makes sure if the last one fails, the other one gets cleaned up:
         firewallrules_ids = []
-        firewallrules_ids << firewall_result[0]['networkacl']['id']
-        firewallrules_ids << firewall_result[1]['networkacl']['id']
+        firewall_result.each do |el|
+          firewallrules_ids << el['networkacl']['id']
+        end
         butler_data['firewallrules_ids'] = firewallrules_ids
         puts "IDs:"
         puts butler_data['firewallrules_ids']
