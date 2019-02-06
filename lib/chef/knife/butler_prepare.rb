@@ -49,23 +49,9 @@ module KnifeButler
         berks_zip = berks_result.split(' to ').last.chomp("\n")
       }
 
-
       # Create VM
-      server_create = Knifecosmic::CosmicServerCreate.new
+      server_details = vm_prepare(butler_data)
 
-      server_create.name_args = [butler_data['server_name']]
-      server_create.config[:cosmic_networks] = [butler_data['test_config']['driver']['customize']['network_name']]
-      server_create.config[:cosmic_template] = butler_data['test_config']['platforms'].first['driver_config']['box']
-      server_create.config[:bootstrap] = false
-      server_create.config[:public_ip] = false
-      server_create.config[:cosmic_service] = butler_data['test_config']['driver']['customize']['service_offering_name']
-      server_create.config[:cosmic_password] = true
-      server_create.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
-      server_create.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
-      server_create.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
-      puts "Creating VM..."
-      server_create.run
-      server_details = server_create.server
       puts "Done!...details:"
       puts server_details
       puts "IP OF SERVER: #{server_details['public_ip']}"
@@ -76,52 +62,10 @@ module KnifeButler
       # Wait for the VM to settle into existance
       sleep(2)
 
-      # Create communicator forwardrule
-      communicator_port = default_communicator_port(communicator_type(test_config))
+      forwardingrule_details = vm_portforward(butler_data)
 
-      forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
-
-      forwardingrule_create.name_args = [butler_data['server_name'], "#{butler_data['communicator_exposed_port']}:#{communicator_port}:TCP"]
-      forwardingrule_create.config[:vrip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
-      forwardingrule_create.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
-      forwardingrule_create.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
-      forwardingrule_create.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
-      puts "Creating forwarding rule..."
-      forwardingrule_details = forwardingrule_create.run
-      puts "Done!"
-
-      # Firewall rule for communicator
-      begin
-        firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
-        firewall_rule.config[:cosmic_url] = "https://#{butler_data['test_config']['driver']['customize']['host']}/client/api"
-        firewall_rule.config[:cosmic_api_key] = butler_data['test_config']['driver']['customize']['api_key']
-        firewall_rule.config[:cosmic_secret_key] = butler_data['test_config']['driver']['customize']['secret_key']
-        firewall_rule.name_args = [butler_data['server_name']]
-        butler_data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
-          firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
-        end
-        firewall_rule.config[:public_ip] = butler_data['test_config']['driver']['customize']['pf_ip_address']
-        firewall_rule.run
-
-        firewall_result = firewall_rule.rules_created
-
-        # This way makes sure if the last one fails, the other one gets cleaned up:
-        firewallrules_ids = []
-        firewall_result.each do |el|
-          firewallrules_ids << el['networkacl']['id']
-        end
-        butler_data['firewallrules_ids'] = firewallrules_ids
-        puts "IDs:"
-        puts butler_data['firewallrules_ids']
-      rescue Exception => e
-        # cleanup
-        File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
-        cleanup = KnifeButler::ButlerClean.new()
-        cleanup.run
-        puts "#{e.class}: #{e.message}"
-        puts e.backtrace
-        raise 'Failed'
-      end
+      firewallrules_ids = vm_firewallrule(butler_data)
+      butler_data['firewallrules_ids'] = firewallrules_ids
 
       berks_zip=berks_thread.join.value
       puts berks_zip
@@ -135,6 +79,84 @@ module KnifeButler
       wait_for_port_open(butler_data['test_config']['driver']['customize']['pf_ip_address'], butler_data['communicator_exposed_port'])
       puts "Communicator available!"
       sleep(2)
+    end
+
+    def vm_firewallrule(data)
+      # Firewall rule for communicator
+      begin
+        test_config = config_fetch
+        communicator_port = default_communicator_port(communicator_type(test_config))
+
+        firewall_rule = Knifecosmic::CosmicFirewallruleCreate.new
+        firewall_rule.config[:cosmic_url] = "https://#{data['test_config']['driver']['customize']['host']}/client/api"
+        firewall_rule.config[:cosmic_api_key] = data['test_config']['driver']['customize']['api_key']
+        firewall_rule.config[:cosmic_secret_key] = data['test_config']['driver']['customize']['secret_key']
+        firewall_rule.name_args = [data['server_name']]
+        data['test_config']['driver']['customize']['pf_trusted_networks'].split(",").each do |cidr|
+          firewall_rule.name_args.push("#{communicator_port}:#{communicator_port}:TCP:#{cidr}")
+        end
+        firewall_rule.config[:public_ip] = data['test_config']['driver']['customize']['pf_ip_address']
+        firewall_rule.run
+
+        firewall_result = firewall_rule.rules_created
+
+        # This way makes sure if the last one fails, the other one gets cleaned up:
+        firewallrules_ids = []
+        firewall_result.each do |el|
+          firewallrules_ids << el['networkacl']['id']
+        end
+        puts "IDs:"
+        puts firewallrules_ids
+      rescue Exception => e
+        # cleanup
+        File.open('.butler.yml', 'w') {|f| f.write data.to_yaml } #Store
+        cleanup = KnifeButler::ButlerClean.new()
+        cleanup.run
+        puts "#{e.class}: #{e.message}"
+        puts e.backtrace
+        raise 'Failed'
+      end
+
+      firewallrules_ids
+    end
+
+    def vm_portforward(data)
+      test_config = config_fetch
+
+      # Create communicator forwardrule
+      communicator_port = default_communicator_port(communicator_type(test_config))
+
+      forwardingrule_create = Knifecosmic::CosmicForwardruleCreate.new
+
+      forwardingrule_create.name_args = [data['server_name'], "#{data['communicator_exposed_port']}:#{communicator_port}:TCP"]
+      forwardingrule_create.config[:vrip] = data['test_config']['driver']['customize']['pf_ip_address']
+      forwardingrule_create.config[:cosmic_url] = "https://#{data['test_config']['driver']['customize']['host']}/client/api"
+      forwardingrule_create.config[:cosmic_api_key] = data['test_config']['driver']['customize']['api_key']
+      forwardingrule_create.config[:cosmic_secret_key] = data['test_config']['driver']['customize']['secret_key']
+      puts "Creating forwarding rule..."
+      forwardingrule_details = forwardingrule_create.run
+      puts "Done!"
+
+      forwardingrule_details
+    end
+
+    def vm_prepare(data)
+      server_create = Knifecosmic::CosmicServerCreate.new
+      server_create.name_args = [data['server_name']]
+      server_create.config[:cosmic_networks] = [data['test_config']['driver']['customize']['network_name']]
+      server_create.config[:cosmic_template] = data['test_config']['platforms'].first['driver_config']['box']
+      server_create.config[:bootstrap] = false
+      server_create.config[:public_ip] = false
+      server_create.config[:cosmic_service] = data['test_config']['driver']['customize']['service_offering_name']
+      server_create.config[:cosmic_password] = true
+      server_create.config[:cosmic_url] = "https://#{data['test_config']['driver']['customize']['host']}/client/api"
+      server_create.config[:cosmic_api_key] = data['test_config']['driver']['customize']['api_key']
+      server_create.config[:cosmic_secret_key] = data['test_config']['driver']['customize']['secret_key']
+      puts "Creating VM..."
+      server_create.run
+      server_details = server_create.server
+
+      server_details
     end
 
     def config_fetch
