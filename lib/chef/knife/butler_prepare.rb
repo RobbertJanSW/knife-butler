@@ -45,8 +45,12 @@ module KnifeButler
 
       puts "Building ZIP with cookbook data in seperate thread"
       berks_thread = Thread.new() {
-        berks_result = `berks package`
-        berks_zip = berks_result.split(' to ').last.chomp("\n")
+        berks_result = system("berks package")
+        if berks_result
+          berks_zip = berks_result.split(' to ').last.chomp("\n")
+        else
+          fail "Berks failed"
+        end
       }
 
       # Create VM
