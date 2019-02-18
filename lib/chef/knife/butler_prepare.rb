@@ -45,11 +45,11 @@ module KnifeButler
 
       puts "Building ZIP with cookbook data in seperate thread"
       berks_thread = Thread.new() {
-        berks_result = system("berks package")
-        if berks_result
+        begin
+          berks_result = `berks package`
           berks_zip = berks_result.split(' to ').last.chomp("\n")
-        else
-          fail "Berks failed"
+        rescue
+          fail "Berks failed!"
         end
       }
 
