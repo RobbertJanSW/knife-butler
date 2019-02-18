@@ -65,6 +65,7 @@ module KnifeButler
         `echo >> butler\\roles\\dummy`
         puts "XCOPY /E /H /Y /C test butler\\cookbooks\\#{repo_name}\\test"
         temppathy = "butler\\cookbooks\\#{repo_name}\\"
+        `echo D | XCOPY /E /H /Y /C test butler\\cookbooks\\#{repo_name}\\test`
         `mv test #{temppathy}`
       else
         `mkdir ./butler`
@@ -106,7 +107,7 @@ module KnifeButler
 
       if platform_family_local == 'windows'
         puts "XCOPY #{chef_solo_rb_path} butler\\ "
-        `XCOPY #{chef_solo_rb_path} butler\\ `
+        `XCOPY #{chef_solo_rb_path} butler\\ /Y`
       else
         `cp #{chef_solo_rb_path} ./butler`
       end
