@@ -45,11 +45,21 @@ module KnifeButler
 
       puts "Building ZIP with cookbook data in seperate thread"
       berks_thread = Thread.new() {
-        begin
-          berks_result = `berks package`
-          berks_zip = berks_result.split(' to ').last.chomp("\n")
-        rescue
-          raise "Berks failed!"
+        if butler_data['test_config']['suites'][0]['provisioner']['policyfile_path'].nil?
+          begin
+            berks_result = `berks package`
+            payload_zip = berks_result.split(' to ').last.chomp("\n")
+          rescue
+            raise "Berks failed!"
+          end
+        else
+          begin
+            chefexport_prepare = `chef install policyfile.rb`
+            chefexport_result = `chef export policyfile.lock.json . -a`
+            payload_zip = chefexport_result.split(' to ').last.chomp("\n")
+          rescue
+            raise "Chef export failed!"
+          end
         end
       }
 
@@ -73,10 +83,10 @@ module KnifeButler
 
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
-      berks_zip=berks_thread.join.value
-      puts berks_zip
+      payload_zip=berks_thread.join.value
+      puts payload_zip
       sleep(30)
-      butler_data['berks_zip'] = berks_zip
+      butler_data['payload_zip'] = payload_zip
       File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for communicator to become responsive:

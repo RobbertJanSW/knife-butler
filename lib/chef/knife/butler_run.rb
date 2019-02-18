@@ -38,13 +38,13 @@ module KnifeButler
       # Prepare ZIP with chef-solo run:
       # puts "Building ZIP with cookbook data"
       # berks_result = `bundle exec berks package`
-      # berks_zip = berks_result.split(' to ').last.chomp("\n")
-      berks_zip = butler_data['berks_zip']
-      puts "ZIPFILE: #{berks_zip}"
+      # payload_zip = berks_result.split(' to ').last.chomp("\n")
+      payload_zip = butler_data['payload_zip']
+      puts "ZIPFILE: #{payload_zip}"
 
       repo_name=File.basename(Dir.pwd)
 
-      `tar -xvzf #{berks_zip}`
+      `tar -xvzf #{payload_zip}`
 
       if platform_family_local == 'windows'
         `mkdir butler`
@@ -252,7 +252,7 @@ module KnifeButler
         bootstrap.config[:chef_server] = false
         bootstrap.config[:payload_folder] = butler_runner_windows_path
         repo_name=File.basename(Dir.pwd)
-  
+
         runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
         bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
         bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
