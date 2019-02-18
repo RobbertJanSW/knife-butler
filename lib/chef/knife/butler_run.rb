@@ -107,7 +107,7 @@ module KnifeButler
 
       if platform_family_local == 'windows'
         puts "XCOPY #{chef_solo_rb_path} butler\\ "
-        `XCOPY #{chef_solo_rb_path} butler\\ `
+        `XCOPY #{chef_solo_rb_path} butler\\ /Y`
       else
         `cp #{chef_solo_rb_path} ./butler`
       end
