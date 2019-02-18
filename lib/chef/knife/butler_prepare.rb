@@ -49,7 +49,7 @@ module KnifeButler
           berks_result = `berks package`
           berks_zip = berks_result.split(' to ').last.chomp("\n")
         rescue
-          fail "Berks failed!"
+          raise "Berks failed!"
         end
       }
 
@@ -77,7 +77,7 @@ module KnifeButler
       puts berks_zip
       sleep(30)
       butler_data['berks_zip'] = berks_zip
-
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for communicator to become responsive:
       puts "Waiting for communicator port......"
