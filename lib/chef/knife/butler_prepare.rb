@@ -71,12 +71,13 @@ module KnifeButler
       firewallrules_ids = vm_firewallrule(butler_data)
       butler_data['firewallrules_ids'] = firewallrules_ids
 
+      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
+
       berks_zip=berks_thread.join.value
       puts berks_zip
       sleep(30)
       butler_data['berks_zip'] = berks_zip
 
-      File.open('.butler.yml', 'w') {|f| f.write butler_data.to_yaml } #Store
 
       # Wait for communicator to become responsive:
       puts "Waiting for communicator port......"
