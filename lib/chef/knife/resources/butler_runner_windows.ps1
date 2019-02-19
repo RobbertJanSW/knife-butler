@@ -13,8 +13,20 @@ copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\defaul
 New-Item C:\Programdata\butler\validation_key -ItemType file
 copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "C:\Programdata\butler\environments"
 
+if ($environment.length -gt 3) {
+  # Runlist run
+  c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb -o "$runlist" -L C:\chef\client.log
+} else {
+Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value ""
+Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "use_policyfile true"
+Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "versioned_cookbooks true"
+Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_document_native_api true"
+Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_name 'build'"
+Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_group 'local'"
 
-c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb -o "$runlist" -L C:\chef\client.log
+  cd C:\ProgramData\butler\cookbooks
+  c:\opscode\chef\bin\chef-client.bat -z -L C:\chef\client.log -c C:\ProgramData\butler\chef-solo.rb
+}
 # Chef manages to exit with return code 0, even when failing and creating a stacktrace file. So lets check for that:
 $resultcode = $LASTEXITCODE
 if (($resultcode -eq 0) -And (Test-Path C:\Users\Administrator\AppData\Local\Temp\kitchen\cache\chef-stacktrace.out)) {

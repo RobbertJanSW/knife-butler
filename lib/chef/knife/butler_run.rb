@@ -44,7 +44,15 @@ module KnifeButler
 
       repo_name=File.basename(Dir.pwd)
 
-      `tar -xvzf #{payload_zip}`
+      show = `cd $(dirname #{payload_zip}); tar -xvzf #{payload_zip}`
+      puts show
+      show = `ls -l`
+      puts show
+      
+      if butler_data['test_config']['suites'][0]['provisioner']['policyfile_path']
+        `mv chef-export cookbooks`
+        `mv .chef/config.rb cookbooks\\`
+      end
 
       if platform_family_local == 'windows'
         `mkdir butler`
@@ -253,7 +261,7 @@ module KnifeButler
         bootstrap.config[:payload_folder] = butler_runner_windows_path
         repo_name=File.basename(Dir.pwd)
 
-        runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
+        runlist = butler_data['test_config']['suites'][0]['provisioner']['policyfile_path'].nil? ? butler_data['test_config']['suites'][0]['run_list'].join(",") : '.'
         bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
         bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
         # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'

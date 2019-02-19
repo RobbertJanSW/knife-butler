@@ -55,7 +55,8 @@ module KnifeButler
         else
           begin
             chefexport_prepare = `chef install policyfile.rb`
-            chefexport_result = `chef export policyfile.lock.json . -a`
+            chefexport_result = `chef export policyfile.lock.json ./chef-export -a`
+            puts chefexport_result
             payload_zip = chefexport_result.split(' to ').last.chomp("\n")
           rescue
             raise "Chef export failed!"
