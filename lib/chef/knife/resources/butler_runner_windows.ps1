@@ -25,7 +25,7 @@ Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_name 'build'
 Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_group 'local'"
 
   cd C:\ProgramData\butler\cookbooks
-  c:\opscode\chef\bin\chef-client.bat -z -L C:\chef\client.log -c C:\ProgramData\butler\chef-solo.rb
+  c:\opscode\chef\bin\chef-client.bat -z -L C:\chef\client.log -c C:\ProgramData\butler\cookbooks\config.rb
 }
 # Chef manages to exit with return code 0, even when failing and creating a stacktrace file. So lets check for that:
 $resultcode = $LASTEXITCODE

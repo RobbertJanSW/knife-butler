@@ -50,8 +50,8 @@ module KnifeButler
       puts show
       
       if butler_data['test_config']['suites'][0]['provisioner']['policyfile_path']
+        `mv chef-export/.chef/config.rb chef-export/`
         `mv chef-export cookbooks`
-        `mv .chef/config.rb cookbooks\\`
       end
 
       if platform_family_local == 'windows'
