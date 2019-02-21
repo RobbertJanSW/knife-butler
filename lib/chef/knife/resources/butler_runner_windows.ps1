@@ -27,8 +27,8 @@ if ($environment.length -gt 3) {
   Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "use_policyfile true"
   Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "versioned_cookbooks true"
   Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_document_native_api true"
-  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_name 'build'"
-  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_group 'local'"
+#  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_name 'build'"
+#  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_group 'local'"
 
   cd C:\ProgramData\butler\cookbooks
   c:\opscode\chef\bin\chef-client.bat -z -L C:\chef\client.log -c C:\ProgramData\butler\cookbooks\config.rb
