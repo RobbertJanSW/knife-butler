@@ -23,12 +23,12 @@ if ($environment.length -gt 3) {
   # Runlist run
   c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb -o "$runlist" -L C:\chef\client.log
 } else {
-  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value ""
-  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "use_policyfile true"
-  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "versioned_cookbooks true"
-  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_document_native_api true"
-  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_name 'build'"
-  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_group 'local'"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value ""
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "use_policyfile true"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "versioned_cookbooks true"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_document_native_api true"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_name 'build'"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_group 'local'"
 
   cd C:\ProgramData\butler\cookbooks
   c:\opscode\chef\bin\chef-client.bat -z -L C:\chef\client.log -c C:\ProgramData\butler\cookbooks\config.rb
