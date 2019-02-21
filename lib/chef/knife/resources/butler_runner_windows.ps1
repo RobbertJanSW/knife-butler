@@ -4,25 +4,31 @@ $runlist = $args[2]
 
 $repo = $test_data.repository
 
+if ($environment.length -gt 3) {
+  $runpath = 'C:\ProgramData\butler'
+} else {
+  $runpath = 'C:\ProgramData\butler\cookbooks'
+}
+
 # Copy data bags from repo to databags path
-mkdir -f C:\Programdata\Butler\data_bags
+mkdir -f $($runpath)\data_bags
 mkdir -f C:\Users\ADMINI~1\AppData\Local\Temp\kitchen\cache
-copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*.*" "C:\ProgramData\butler\data_bags"
-copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*" "C:\ProgramData\butler\data_bags"
+copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*.*" "$($runpath)\data_bags"
+copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*" "$($runpath)\data_bags"
 copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\default\encrypted_data_bag_secret" "C:\Chef"
 New-Item C:\Programdata\butler\validation_key -ItemType file
-copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "C:\Programdata\butler\environments"
+copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "$($runpath)\environments"
 
 if ($environment.length -gt 3) {
   # Runlist run
   c:\opscode\chef\bin\chef-client.bat -z -E $environment -c C:\ProgramData\butler\chef-solo.rb -o "$runlist" -L C:\chef\client.log
 } else {
-Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value ""
-Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "use_policyfile true"
-Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "versioned_cookbooks true"
-Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_document_native_api true"
-Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_name 'build'"
-Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_group 'local'"
+  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value ""
+  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "use_policyfile true"
+  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "versioned_cookbooks true"
+  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_document_native_api true"
+  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_name 'build'"
+  Add-Content -Path C:\ProgramData\butler\chef-solo.rb -Value "policy_group 'local'"
 
   cd C:\ProgramData\butler\cookbooks
   c:\opscode\chef\bin\chef-client.bat -z -L C:\chef\client.log -c C:\ProgramData\butler\cookbooks\config.rb
