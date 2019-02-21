@@ -145,8 +145,8 @@ module KnifeButler
       converge_runlist(butler_data)
 
       # cleanup
-      cleanup = KnifeButler::ButlerClean.new()
-      cleanup.run
+#      cleanup = KnifeButler::ButlerClean.new()
+#      cleanup.run
 
       puts "Done!"
     end
