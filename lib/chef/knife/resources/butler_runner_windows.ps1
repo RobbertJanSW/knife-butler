@@ -11,8 +11,8 @@ if ($environment.length -gt 3) {
 }
 
 # Copy data bags from repo to databags path
-mkdir -f $($runpath)\data_bags
-mkdir -f C:\Users\ADMINI~1\AppData\Local\Temp\kitchen\cache
+mkdir -f "$($runpath)\data_bags"
+mkdir -f "C:\Users\ADMINI~1\AppData\Local\Temp\kitchen\cache"
 copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*.*" "$($runpath)\data_bags"
 copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*" "$($runpath)\data_bags"
 copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\default\encrypted_data_bag_secret" "C:\Chef"
