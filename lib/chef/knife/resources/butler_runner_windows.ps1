@@ -11,13 +11,13 @@ if ($environment.length -gt 3) {
 }
 
 # Copy data bags from repo to databags path
-mkdir -f "$($runpath)\data_bags"
-mkdir -f "C:\Users\ADMINI~1\AppData\Local\Temp\kitchen\cache"
-copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*.*" "$($runpath)\data_bags"
-copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*" "$($runpath)\data_bags"
-copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\default\encrypted_data_bag_secret" "C:\Chef"
-New-Item C:\Programdata\butler\validation_key -ItemType file
-copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "$($runpath)\environments"
+mkdir -f "$($runpath)\data_bags" -ErrorAction SilentlyContinue
+mkdir -f "C:\Users\ADMINI~1\AppData\Local\Temp\kitchen\cache" -ErrorAction SilentlyContinue
+copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*.*" "$($runpath)\data_bags" -ErrorAction SilentlyContinue
+copy-item -Recurse "C:\ProgramData\butler\cookbooks\$($repo_name)\test\fixtures\data_bags\*" "$($runpath)\data_bags" -ErrorAction SilentlyContinue
+copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\integration\default\encrypted_data_bag_secret" "C:\Chef" -ErrorAction SilentlyContinue
+New-Item C:\Programdata\butler\validation_key -ItemType file -ErrorAction SilentlyContinue
+copy-item "C:\ProgramData\butler\cookbooks\$($repo_name)\test\environments\*.*" "$($runpath)\environments" -ErrorAction SilentlyContinue
 
 if ($environment.length -gt 3) {
   # Runlist run
@@ -42,3 +42,4 @@ if (($resultcode -eq 0) -And (Test-Path C:\Users\Administrator\AppData\Local\Tem
 while (Test-Path 'C:\chef\client.log') { Remove-Item 'C:\chef\client.log' -Force -ErrorAction SilentlyContinue }
 # Throw error code back upstream in case of unsuccessful run
 if ($resultcode -ne 0) { throw $resultcode }
+$error.clear()
