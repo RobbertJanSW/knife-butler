@@ -27,6 +27,9 @@ if ($environment.length -gt 3) {
   Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "use_policyfile true"
   Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "versioned_cookbooks true"
   Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_document_native_api true"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_document_native_api true"
+  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "validation_key C:\Programdata\butler\validation_key"
+
 #  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_name 'build'"
 #  Add-Content -Path C:\ProgramData\butler\cookbooks\config.rb -Value "policy_group 'local'"
 
