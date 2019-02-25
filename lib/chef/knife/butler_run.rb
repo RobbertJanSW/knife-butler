@@ -261,11 +261,11 @@ module KnifeButler
         bootstrap.config[:payload_folder] = butler_runner_windows_path
         repo_name=File.basename(Dir.pwd)
 
-        runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
-        if butler_data['test_config']['suites'][0]['provisioner']['policyfile_path'].nil?
-          bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
-        else
+        if butler_data['test_config']['suites'][0]['provisioner']['policyfile_path']
           bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1"
+        else
+          runlist = butler_data['test_config']['suites'][0]['run_list'].join(",")
+          bootstrap.config[:bootstrap_run_command] = "C:\\chef\\extra_files\\butler_runner_windows.ps1 #{repo_name} #{butler_data['test_config']['suites'][0]['attributes']['chef_environment']} \"#{runlist}\""
         end
         bootstrap.config[:bootstrap_tail_file] = 'C:\chef\client.log'
         # bootstrap.config[:bootstrap_run_command] = 'get-childitem C:\chef\extra_files'
